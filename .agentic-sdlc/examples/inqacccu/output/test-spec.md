@@ -1,136 +1,447 @@
-# Test Specification for INQACCCU Modernization
+# test-spec.md
 
-**Document ID:** `test-spec-inqacccu-001`  
-**Pipeline:** `mainframe_modernization`  
-**Target Output File:** `test-spec.md`  
-**Version:** 1.0  
-**Status:** Implementation-Ready  
-**Last Updated:** 2025  
+Status: DRY RUN
+
+Agent: TestSpecAgent
+Purpose: Create complete test specifications for business rule and API verification.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/plan.md
+- output/program-analysis.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/traceability-matrix.md
+
+## Prompt Template
+
+# Test Spec Prompt
+
+Create test specification from business rules and spec.
+
+Inputs must include `intended-system.md` when available.
+
+Include:
+- Unit tests
+- Integration tests
+- Contract tests
+- Negative and boundary scenarios
+- Rule-to-test mapping
+
+Minimum detail expectations:
+- Use IDs `TC-xxx`.
+- Map each test to `FR-xxx` and `AC-xxx` when available.
+- Include security, error-path, and performance test scenarios.
+- Include legacy parity tests and modernization enhancement tests.
+
+
+## Input Previews
+
+## Source: output/intended-system.md
+
+# intended-system.md
+
+Status: DRY RUN
+
+Agent: SystemIntentAgent
+Purpose: Define intended target system architecture and constraints before downstream requirement and spec generation.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- cop
+
+[...trimmed for token budget...]
+
+BM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: supporting/api/operation.yaml
 
 ---
+version: "1.0"
+zasset: "INQACCCU"
 
-## 1. Test Specification Overview
+# Made with Bob
 
-### 1.1 Purpose and Scope
+## Source: system-intent.md
 
-This document defines comprehensive test specifications for the INQACCCU modernization initiative. Tests verify:
-- **Functional Requirements (FR):** Customer account inquiry API behavior, legacy parity, and enhancement toggles
-- **Business Rules (BR):** Customer acceptance, account retrieval, validation strictness, status preservation, and secret handling
-- **Non-Functional Requirements (NFR):** Security, observability, performance, and error handling
-- **Negative & Boundary Scenarios:** Invalid inputs, missing records, authorization failures, timeouts
-- **Legacy Parity & Modernization:** Preserve observable behavior while enabling future enhancements
+# System Intent Blueprint
 
-### 1.2 Test Levels
+## Product goal
+Modernize INQACC account inquiry into a web-accessible application with a Spring Boot backend and React frontend while preserving legacy observable behavior.
 
-| Test Level | Scope | Tools/Framework | Responsibility |
-|---|---|---|---|
-| **Unit Tests** | Single class/method; business logic; DTOs | JUnit 5, Mockito, AssertJ | Backend Development Team |
-| **Integration Tests** | Spring context; controller+service+repository | Spring Boot Test, TestContainers | Backend Development Team |
-| **Contract Tests** | API request/response payloads; backward compatibility | Spring Cloud Contract, Pact | API Lead |
-| **Security Tests** | OAuth2 token validation; role-based access; input sanitization | Spring Security Test, OWASP ZAP | Security Team |
-| **Performance Tests** | Response latency; throughput; resource usage | JMH, Gatling | Performance Engineer |
-| **E2E Tests** | Full API flow through React frontend; user scenarios | Cypress, Selenium | QA Team |
+## Target stack
+- Backend: Java 21, Spring Boot 3.3.x, Maven 3.9+
+- Frontend: React 18.x, TypeScript 5.x, Vite 5.x, Node.js 20 LTS
+- API: REST over HTTPS, OpenAPI 3.0.3
+- Persistence for POC: Mock repository (no live CICS or DB2 connectivity)
 
-## 2. Test Cases Overview
+## Security baseline
+- Authentication: OAuth2 resource server with JWT bearer tokens
+- Authorization: Role-based access control for account inquiry endpoints
+- Transport: TLS 1.2+
+- Input validation: strict path/query validation and standardized error responses
+- Secrets handling: environment variables or secret manager, never in source control
 
-| Test Case ID | Requirement ID | Description |
-|---------------|----------------|-------------|
-| TC-001       | FR-001         | Verify retrieval of account records for a valid customer number. |
-| TC-002       | FR-002         | Verify success flag returned when customer is found. |
-| TC-003       | AC-003         | Validate format of the customer number. |
-| TC-004       | AC-004         | Ensure data sanitization before response. |
-| TC-005       | BR-001         | Test retrieval failure for an invalid customer number. |
-| TC-006       | BR-002         | Test retrieval failure scenario and success flag. |
-| TC-007       | BR-007         | Validate sanitization of account data. |
-| TC-008       | Security       | Test for unauthorized access to account records. |
-| TC-009       | Performance    | Measure response time for account retrieval under load. |
-| TC-010       | Legacy Parity  | Ensure legacy behavior is preserved in account retrieval. |
+## Operational baseline
+- Logging: structured JSON logs with correlation ID per request
+- Metrics: request latency, error rate, downstream adapter status
+- Tracing: distributed tracing ready (OpenTelemetry)
 
-## 3. Unit Tests
+## Delivery constraints
+- Preserve legacy behavior as default path
+- Any enhancement must be explicitly marked and toggleable
+- Controllers remain thin, business logic in services
+- Do not connect to real mainframe systems in POC mode
 
-### TC-001: Verify Retrieval of Account Records
-- **Description**: Test that the system retrieves account records for a valid customer number.
-- **Input**: Customer number "1234567890".
-- **Expected Output**: List of associated account records.
-- **Mapping**: FR-001, BR-001
+## Source: output/business-rules.md
 
-### TC-002: Verify Success Flag Returned
-- **Description**: Test that the system returns a success flag when the customer is found.
-- **Input**: Customer number "1234567890".
-- **Expected Output**: Success flag "Y", number of accounts found.
-- **Mapping**: FR-002, BR-002
+# business-rules.md
 
-### TC-003: Validate Format of Customer Number
-- **Description**: Test that the system validates the format of the customer number.
-- **Input**: Customer number "12345".
-- **Expected Output**: Validation result indicating invalid format.
-- **Mapping**: AC-003
+Status: DRY RUN
 
-## 4. Integration Tests
+Agent: BusinessRulesAgent
+Purpose: Extract and normalize business rules from legacy analysis and source artifacts.
 
-### TC-004: Ensure Data Sanitization
-- **Description**: Test that the system sanitizes account data before sending it to the client.
-- **Input**: Account details with potential injection payload.
-- **Expected Output**: Sanitized account data.
-- **Mapping**: AC-004, BR-007
+## Pipeline Context
 
-### TC-005: Test Retrieval Failure for Invalid Customer Number
-- **Description**: Test that the system handles retrieval failure for an invalid customer number.
-- **Input**: Customer number "0000000000".
-- **Expected Output**: Error response "Customer not found".
-- **Mapping**: BR-001
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-## 5. Contract Tests
+## Inputs Considered
 
-### TC-006: Test Retrieval Failure Scenario
-- **Description**: Validate the API contract for failure scenarios.
-- **Input**: Invalid customer number.
-- **Expected Output**: HTTP 404 with error message.
-- **Mapping**: BR-002
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- system-intent.md
+- output/program-analysis.md
 
-## 6. Negative and Boundary Scenarios
+## Prompt Template
 
-### TC-007: Validate Sanitization of Account Data
-- **Description**: Test that all data returned to the client is sanitized.
-- **Input**: Account data containing special characters.
-- **Expected Output**: Sanitized account data.
-- **Mapping**: BR-007
+# Business Rules Prompt
 
-### TC-008: Test Unauthorized Access
-- **Description**: Verify that unauthorized users cannot access account records.
-- **Input**: Request without valid JWT token.
-- **Expected Output**: HTTP 403 Forbidden.
-- **Mapping**: Security
+Extract business rules from legacy sources and analysis outputs.
 
-## 7. Performance Tests
+Produce:
+- Rule identifier
+- Rule statement
+- Trigger conditions
+- Inputs and outputs
+- Error conditions
 
-### TC-009: Measure Response Time Under Load
-- **Description**: Test the response time for account retrieval under load.
-- **Input**: Simulate 100 concurrent requests for account retrieval.
-- **Expected Output**: Response time within acceptable limits (e.g., < 200ms).
-- **Mapping**: Performance
+Avoid implementation details where possible.
 
-## 8. Legacy Parity Tests
 
-### TC-010: Ensure Legacy Behavior is Preserved
-- **Description**: Verify that the modernized application preserves legacy behavior.
-- **Input**: Customer number "1234567890".
-- **Expected Output**: Same account records as in legacy system.
-- **Mapping**: Legacy Parity
+## Input Previews
 
-## 9. Rule-to-Test Mapping
+## Source:
 
-| Rule ID | Test Case ID |
-|---------|---------------|
-| BR-001  | TC-001       |
-| BR-002  | TC-002       |
-| BR-003  | TC-003       |
-| BR-007  | TC-004       |
+[...trimmed for token budget...]
 
-## 10. Security, Error-Path, and Performance Test Scenarios
-- **Security**: TC-008
-- **Error-Path**: TC-005
-- **Performance**: TC-009
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
 
-## 11. Conclusion
-This test specification outlines the necessary tests to ensure the modernized INQACCCU system meets business rules, functional requirements, and security standards while preserving legacy behavior. Each test is mapped to its corresponding requirement for traceability and validation.
+## Source: output/requirements.md
+
+# requirements.md
+
+Status: DRY RUN
+
+Agent: RequirementsAgent
+Purpose: Produce structured requirements from business rules and legacy findings.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- output/business-rules.md
+- output/intended-system.md
+- output/program-analysis.md
+
+## Prompt Template
+
+# Requirements Prompt
+
+Convert business rules and analysis into clear functional and non-functional requirements.
+
+Inputs must include `intended-system.md` when available.
+All requirements must align with target stack, versions,
+
+[...trimmed for token budget...]
+
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: output/spec.md
+
+# spec.md
+
+Status: DRY RUN
+
+Agent: SpecAgent
+Purpose: Generate implementation-ready functional and technical specification.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/intended-system.md
+- output/program-analysis.md
+- output/requirements.md
+
+## Prompt Template
+
+# Spec Prompt
+
+Create implementation-ready specification from requirements.
+
+Inputs must include `intended-system.md` when avai
+
+[...trimmed for token budget...]
+
+pping.yaml
+
+---
+version: "1.0"
+response_200.yaml:
+  condition: "$exists($zosAssetResponse.commarea.INQACCCZ) or
+    $not($exists($zosAssetResponse.abendCode))"
+  httpStatusCode: 200
+response_400.yaml:
+  httpStatusCode: 400
+response_401.yaml:
+  httpStatusCode: 401
+response_403.yaml:
+  httpStatusCode: 403
+response_404.yaml:
+  httpStatusCode: 404
+response_500.yaml:
+  condition: true
+  httpStatusCode: 500
+
+# Made with Bob
+
+## Source: supporting/api/operation.yaml
+
+---
+version: "1.0"
+zasset: "INQACCCU"
+
+# Made with Bob
+
+## Source: supporting/api/request.yaml
+
+---
+version: "1.2"
+mappings:
+- commarea:
+    mappings:
+    - INQACCCZ:
+        required: false
+        nullable: false
+        mappings:
+        - CUSTOMER-NUMBER:
+            required: false
+            nullable: false
+            expression: "$pathParameters.customerId"
+
+## Source: supporting/api/response_200.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - accounts:
+        required: true
+        nullable: false
+        foreach:
+          input: "$zosAssetResponse.commarea.INQACCCZ.\"ACCOUNT-DETAILS\""
+          mappings:
+          - accountId:
+              required: true
+              nullable: false
+              template: "{{$item.\"COMM-ACCNO\"}}"
+          - accountType:
+              required: true
+              nullable: false
+              template: "{{$item.\"COMM-ACC-TYPE\"}}"
+          - currency:
+              required: true
+              nullable: false
+              template: "GBP"
+          - accountNumber:
+              required: false
+              nullable: false
+              template: "{{$item.\"COMM-ACCNO\"}}"
+          - sortCode:
+              required: false
+              nullable: false
+              template: "{{$item.\"COMM-SCODE\"}}"
+          - status:
+              required: true
+              nullable: false
+              template: "ACTIVE"
+    - totalCount:
+        required: false
+        nullable: false
+        expression: "$count($zosAssetResponse.commarea.INQACCCZ.\"ACCOUNT-DETAILS\"\
+          )"
+
+## Source: supporting/api/response_401.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+
+## Source: supporting/api/response_403.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+
+## Source: supporting/api/response_404.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+
+## Source: supporting/api/response_500.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+

@@ -1,223 +1,491 @@
 # modernization-report.md
 
-**Document ID:** `modernization-report-inqacccu-001`  
-**Pipeline:** `mainframe_modernization`  
-**Artifact:** Final Modernization Report  
-**Generated:** 2025  
-**Status:** Implementation-Ready  
+Status: DRY RUN
+
+Agent: ReportAgent
+Purpose: Compile a final modernization report that summarizes outputs and next actions.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/code-review-checklist.md
+- output/copilot-build-prompt.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/plan.md
+- output/program-analysis.md
+- output/qa-review-checklist.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.md
+- output/openapi.yaml
+
+## Prompt Template
+
+# Final Report Prompt
+
+Compile modernization report with:
+- Inputs reviewed
+- Artifacts generated
+- Risks and gaps
+- Recommended next actions
+- Copilot usage notes
+
+
+## Input Previews
+
+## Source: output/intended-system.md
+
+# intended-system.md
+
+Status: DRY RUN
+
+Agent: SystemIntentAgent
+Purpose: Define intended target system architecture and constraints before downstream requirement and spec generation.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- cop
+
+[...trimmed for token budget...]
+
+BM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: supporting/api/operation.yaml
 
 ---
+version: "1.0"
+zasset: "INQACCCU"
 
-## Executive Summary
+# Made with Bob
 
-This report consolidates outputs from the INQACCCU mainframe modernization initiative—the transformation of a legacy COBOL CICS customer-to-account inquiry program into a modern Spring Boot 3.3.x REST API with React 18.x frontend. All artifacts have been generated per the mandatory System Intent Blueprint and are aligned with target stack, security baseline, and delivery constraints. The initiative is ready for Phase 1 (Foundation) execution.
+## Source: system-intent.md
+
+# System Intent Blueprint
+
+## Product goal
+Modernize INQACC account inquiry into a web-accessible application with a Spring Boot backend and React frontend while preserving legacy observable behavior.
+
+## Target stack
+- Backend: Java 21, Spring Boot 3.3.x, Maven 3.9+
+- Frontend: React 18.x, TypeScript 5.x, Vite 5.x, Node.js 20 LTS
+- API: REST over HTTPS, OpenAPI 3.0.3
+- Persistence for POC: Mock repository (no live CICS or DB2 connectivity)
+
+## Security baseline
+- Authentication: OAuth2 resource server with JWT bearer tokens
+- Authorization: Role-based access control for account inquiry endpoints
+- Transport: TLS 1.2+
+- Input validation: strict path/query validation and standardized error responses
+- Secrets handling: environment variables or secret manager, never in source control
+
+## Operational baseline
+- Logging: structured JSON logs with correlation ID per request
+- Metrics: request latency, error rate, downstream adapter status
+- Tracing: distributed tracing ready (OpenTelemetry)
+
+## Delivery constraints
+- Preserve legacy behavior as default path
+- Any enhancement must be explicitly marked and toggleable
+- Controllers remain thin, business logic in services
+- Do not connect to real mainframe systems in POC mode
+
+## Source: output/business-rules.md
+
+# business-rules.md
+
+Status: DRY RUN
+
+Agent: BusinessRulesAgent
+Purpose: Extract and normalize business rules from legacy analysis and source artifacts.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- system-intent.md
+- output/program-analysis.md
+
+## Prompt Template
+
+# Business Rules Prompt
+
+Extract business rules from legacy sources and analysis outputs.
+
+Produce:
+- Rule identifier
+- Rule statement
+- Trigger conditions
+- Inputs and outputs
+- Error conditions
+
+Avoid implementation details where possible.
+
+
+## Input Previews
+
+## Source:
+
+[...trimmed for token budget...]
+
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: output/requirements.md
+
+# requirements.md
+
+Status: DRY RUN
+
+Agent: RequirementsAgent
+Purpose: Produce structured requirements from business rules and legacy findings.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- output/business-rules.md
+- output/intended-system.md
+- output/program-analysis.md
+
+## Prompt Template
+
+# Requirements Prompt
+
+Convert business rules and analysis into clear functional and non-functional requirements.
+
+Inputs must include `intended-system.md` when available.
+All requirements must align with target stack, versions,
+
+[...trimmed for token budget...]
+
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: output/spec.md
+
+# spec.md
+
+Status: DRY RUN
+
+Agent: SpecAgent
+Purpose: Generate implementation-ready functional and technical specification.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/intended-system.md
+- output/program-analysis.md
+- output/requirements.md
+
+## Prompt Template
+
+# Spec Prompt
+
+Create implementation-ready specification from requirements.
+
+Inputs must include `intended-system.md` when avai
+
+[...trimmed for token budget...]
+
+pping.yaml
 
 ---
+version: "1.0"
+response_200.yaml:
+  condition: "$exists($zosAssetResponse.commarea.INQACCCZ) or
+    $not($exists($zosAssetResponse.abendCode))"
+  httpStatusCode: 200
+response_400.yaml:
+  httpStatusCode: 400
+response_401.yaml:
+  httpStatusCode: 401
+response_403.yaml:
+  httpStatusCode: 403
+response_404.yaml:
+  httpStatusCode: 404
+response_500.yaml:
+  condition: true
+  httpStatusCode: 500
 
-## 1. Inputs Reviewed
+# Made with Bob
 
-### 1.1 Mandatory Source Documentation
+## Source: output/openapi.yaml
 
-| Source | Status | Purpose | Key Findings |
-|--------|--------|---------|--------------|
-| `provided/system-intent.md` | ✓ PRESENT | Binding architecture blueprint | Establishes Java 21, Spring Boot 3.3.x, React 18.x, OAuth2/JWT, mock persistence, structured logging |
-| `system-intent.md` | ✓ IDENTICAL | Redundant confirmation | Confirms target stack, security baseline, operational constraints |
-| Legacy Program: INQACCCU.cbl | ✓ ANALYZED | Source behavior baseline | CICS online inquiry; 10-digit customer lookup; 0–20 account relationships; DLI/DB2 access |
-| Copybooks: INQACCCUZ, ACCOUNT, ACCDB2 | ✓ MAPPED | Data structure definition | 15 fields extracted and mapped to REST JSON; date/numeric format conversions documented |
+# openapi.yaml
 
-### 1.2 Analysis Artifacts
+Status: DRY RUN
 
-| Artifact | Document ID | Status | Coverage |
-|----------|-------------|--------|----------|
-| Program Analysis | `prog-analysis-inqacccu-001` | ✓ COMPLETE | Data structures, field mapping, CICS transaction flow, error semantics |
-| Business Rules Extraction | `business-rules-inqacccu-001` | ✓ COMPLETE | 7 core rules (BR001–BR007) covering customer inquiry, account retrieval, validation, status preservation, error handling, secrets management |
-| Requirements Specification | `requirements-inqacccu-001` | ✓ COMPLETE | 24 requirements (9 functional, 15 non-functional); input validation, observability, security, performance |
-| Intended System Design | `intended-system.md` | ✓ COMPLETE | Feature scope, REST API structure, authentication model, data transformation, mock repository layer |
+Agent: OpenApiAgent
+Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
 
----
+## Pipeline Context
 
-## 2. Artifacts Generated
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-### 2.1 Specification & API Contract
+## Inputs Considered
 
-| Artifact | Document ID | Format | Status | Key Content |
-|----------|-------------|--------|--------|------------|
-| Specification (Functional) | `spec-inqacccu-modernization-001` | Markdown | ✓ COMPLETE | 6 sections: Feature objective, API endpoint definition, request/response schemas, business rule realization, validation rules, error semantics |
-| OpenAPI 3.0.3 Definition | `openapi.yaml` | YAML | ✓ COMPLETE | `GET /api/v1/customers/{customerId}/accounts` with OAuth2 security scheme, request/response models, error responses (400, 401, 403, 500), correlation ID tracing |
-| Data Mapping Matrix | `mapping-matrix-inqacccu-001` | Markdown | ✓ COMPLETE | Legacy-to-modern component mapping; COBOL field → Java DTO transformation; 1:1 traceability for 15+ fields |
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/plan.md
+- output/program-analysis.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.md
 
-### 2.2 Implementation Guidance
+## P
 
-| Artifact | Document ID | Format | Status | Purpose |
-|----------|-------------|--------|--------|---------|
-| Copilot Build Prompt | `copilot-build-prompt.md` | Markdown | ✓ COMPLETE | Iterative code generation guide; bound to System Intent; includes Spring Boot scaffolding, controller template, service skeleton, repository interface, DTO signatures |
-| Implementation Tasks | `tasks.md` | Markdown | ✓ COMPLETE | Phased delivery breakdown: backend foundation (Weeks 1–4), integration & security (Weeks 5–8), UAT (Weeks 9–12), go-live (Weeks 13–14) |
-| Delivery Plan | `plan.md` | Markdown | ✓ COMPLETE | 4-phase roadmap with 12+ milestones; gate criteria; risk mitigation; team assignments; dependency management |
+[...trimmed for token budget...]
 
-### 2.3 Quality Assurance & Review
+able: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
 
-| Artifact | Document ID | Format | Status | Scope |
-|----------|-------------|--------|--------|-------|
-| Code Review Checklist | `code-review-checklist-inqacccu-001` | Markdown | ✓ COMPLETE | 30+ architectural, coding, security, and observability controls; Spring Boot layering, dependency injection, OAuth2 enforcement, input validation, logging standards |
-| QA Review Checklist | `qa-review-checklist.md` | Markdown | ✓ COMPLETE | Test strategy for functional requirements, integration scenarios, error cases, performance SLOs, security controls, accessibility (WCAG 2.1 AA frontend) |
-| Test Specification | `test-spec.md` | Markdown | ✓ COMPLETE | Unit test strategy (service layer, DTO mapping), integration test scenarios (OAuth2 validation, repository mocking), end-to-end test cases (API behavior, error paths), performance baselines |
-| Traceability Matrix | `traceability-matrix.md` | Markdown | ✓ COMPLETE | Links requirements → specifications → implementation tasks → test cases; enables impact analysis and compliance verification |
-
----
-
-## 3. Risks and Gaps
-
-### 3.1 Identified Risks
-
-#### Risk R001: Mock Repository Sustainability
-**Severity:** MEDIUM  
-**Description:** POC phase uses in-memory mock repository; transition to live DB2/CICS adapter in later phases requires adapter implementation and integration testing.  
-**Mitigation:**
-- Define adapter interface in Phase 1 (spec-complete; POC mock implements it)
-- Plan Phase 2/3 for adapter development and integration testing
-- Document DB2 connection pooling, error handling, and fallback behavior
-- Establish contract tests between mock and real adapter
-
-**Owner:** Architect  
-**Target Resolution:** Phase 2 (Week 5–8)
-
-#### Risk R002: OAuth2 Token Validation Performance
-**Severity:** MEDIUM  
-**Description:** Every request requires JWT validation; high-frequency token validation may impact latency.  
-**Mitigation:**
-- Enable JWT cache in Spring Security (e.g., `JwtDecoder` with local cache)
-- Measure token validation latency during Phase 1 load testing
-- Configure token cache TTL aligned with token refresh policy
-- Monitor cache hit rate in observability platform
-
-**Owner:** Backend Lead  
-**Target Resolution:** Phase 1 (Week 4)
-
-#### Risk R003: Legacy Copybook Format Incompleteness
-**Severity:** LOW  
-**Description:** Analysis assumes INQACCCUZ, ACCOUNT, ACCDB2 copybooks are authoritative; undocumented or system-specific variations may exist.  
-**Mitigation:**
-- Validate copybook definitions against live CICS system during Phase 2 integration
-- Establish copybook version control and change management process
-- Document any deviations in adapter integration guide
-- Plan compatibility mode for legacy client versions
-
-**Owner:** Integration Lead  
-**Target Resolution:** Phase 2 (Week 6)
-
-#### Risk R004: Frontend Authentication Flow Complexity
-**Severity:** MEDIUM  
-**Description:** React frontend must acquire, refresh, and store JWT tokens securely; incorrect implementation risks token exposure.  
-**Mitigation:**
-- Use secure HTTP-only cookies for token storage (not localStorage)
-- Implement automatic token refresh with exponential backoff
-- Validate token expiry in React context before API calls
-- Include CSRF protection and SameSite cookie attributes
-- Test authentication flow across browser and device combinations
-
-**Owner:** Frontend Lead  
-**Target Resolution:** Phase 1 (Week 3)
-
-#### Risk R005: Observability Overhead in High-Volume Scenarios
-**Severity:** LOW  
-**Description:** Structured JSON logging, correlation IDs, and OpenTelemetry instrumentation may add latency at scale.  
-**Mitigation:**
-- Implement async logging (logback `AsyncAppender`)
-- Configure OpenTelemetry sampler at appropriate rate (e.g., 10% in production)
-- Monitor log volume and cardinality (e.g., avoid unbounded dimensions)
-- Set alerts on log processing latency
-
-**Owner:** DevOps Lead  
-**Target Resolution:** Phase 2 (Week 8)
-
-### 3.2 Gaps and Deferred Decisions
-
-#### Gap G001: Database Adapter Implementation
-**Status:** DEFERRED TO PHASE 2  
-**Description:** Live DB2/DLI adapter not in POC scope. Mockery currently satisfies Phase 1 integration testing.  
-**Action:**
-- Document adapter interface and contract in Phase 1 spec (✓ DONE: in `spec.md`)
-- Plan Phase 2 spike for DB2 connection pooling, error handling, transaction semantics
-- Establish integration environment with test DB2 instance
-
-#### Gap G002: Frontend Build & Deployment Pipeline
-**Status:** DOCUMENTED; DEFERRED TO PHASE 1 SPRINT 2  
-**Description:** React Vite build, artifact optimization, and deployment to CDN/container not fully detailed.  
-**Action:**
-- Define Vite build config (tree-shaking, code splitting, source maps)
-- Plan Docker image creation and multi-stage builds
-- Document environment-specific configuration (dev, staging, prod API endpoints)
-- Establish CI/CD pipeline (GitHub Actions or similar) for frontend artifacts
-
-#### Gap G003: Secrets Rotation and Audit Trail
-**Status:** DOCUMENTED; DEFERRED TO PHASE 2 HARDENING  
-**Description:** Secrets handling specified (environment variables, vault); rotation policy and audit logging not detailed.  
-**Action:**
-- Plan integration with enterprise secret manager (e.g., Vault, AWS Secrets Manager)
-- Define key rotation schedule (e.g., 90 days for service credentials)
-- Implement audit log for secret access and rotation events
-- Test credential refresh without application restart
-
-#### Gap G004: Backward Compatibility & Legacy Client Support
-**Status:** SCOPED OUT OF POC  
-**Description:** Legacy CICS clients may require co-existence with new REST API during cutover window.  
-**Action:**
-- Document legacy interface sunset timeline and deprecation schedule
-- Plan adapter layer for dual-path routing (CICS → new API translation) if needed
-- Establish migration timeline with business stakeholders
-- Test client cutover in staging before production
+## Source: supporting/api/response_500.yaml
 
 ---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
 
-## 4. Recommended Next Actions
+## Source: supporting/api/operation.yaml
 
-### 4.1 Immediate (Week 1–2)
+---
+version: "1.0"
+zasset: "INQACCCU"
 
-| Action ID | Action | Owner | Success Criteria | Target Date |
-|-----------|--------|-------|------------------|-------------|
-| A001 | **Approve System Intent & Project Charter** | Business Sponsor | Written sign-off on feature scope, budget, timeline, staffing | EOW 1 |
-| A002 | **Establish Development Environment** | DevOps Lead | Git repo provisioned, Maven/Node.js toolchains validated, local dev environment documented | EOW 1 |
-| A003 | **Finalize Team Staffing & RACI Matrix** | Program Manager | Backend Lead, Frontend Lead, QA Lead, Architect assigned; roles/responsibilities documented | EOW 2 |
-| A004 | **Conduct System Intent Walkthrough** | Architect | All stakeholders aligned on target stack, security baseline, constraints; Q&A resolved | EOW 2 |
-| A005 | **Validate Copybook Definitions** | Integration Lead | INQACCCUZ, ACCOUNT, ACCDB2 copybooks confirmed with CICS system owner; deviations documented | EOW 2 |
+# Made with Bob
 
-### 4.2 Phase 1: Foundation (Weeks 1–4)
+## Source: supporting/api/request.yaml
 
-| Action ID | Action | Owner | Deliverable | Target Week |
-|-----------|--------|-------|-------------|------------|
-| A006 | **Spring Boot Project Scaffolding** | Backend Lead | Maven project with Spring Boot 3.3.x, Java 21, dependencies (spring-security-oauth2, spring-data, micrometer, spring-boot-starter-actuator) | 2 |
-| A007 | **REST Controller Implementation** | Backend Dev | `CustomerAccountsController` with OAuth2 security, path validation, response mapping; unit tests | 2 |
-| A008 | **Service Layer & Business Logic** | Backend Dev | `CustomerAccountsService` with account retrieval logic, validation, error handling; mocked repository | 3 |
-| A009 | **Mock Repository & DTO Mapping** | Backend Dev | In-memory mock repository; DTO classes (CustomerAccountsResponse, Account); mapping tests | 3 |
-| A010 | **React App Setup & Component Structure** | Frontend Lead | Vite scaffold, TypeScript config, component hierarchy (App, CustomerForm, AccountsList); local dev server | 2 |
-| A011 | **Frontend OAuth2 Integration** | Frontend Dev | Token acquisition flow (PKCE), HTTP interceptor for JWT bearer injection, token refresh logic | 3 |
-| A012 | **OpenAPI/Swagger Integration** | Backend Dev | Springdoc-openapi dependency, `@OpenApiDefinition` annotations on controller, Swagger UI enabled at `/api/v1/swagger-ui.html` | 2 |
-| A013 | **Structured Logging Setup** | Backend Dev | SLF4J + Logback JSON encoder, correlation ID servlet filter, MDC configuration; sample logs validated | 3 |
-| A014 | **Phase 1 Integration Testing** | QA Lead | Test suite for OAuth2 validation, request/response mapping, error paths, input validation; all tests GREEN | 4 |
-| A015 | **Phase 1 Acceptance Criteria Validation** | Architect | Specification compliance review; code review checklist pass; no critical findings | 4 |
+---
+version: "1.2"
+mappings:
+- commarea:
+    mappings:
+    - INQACCCZ:
+        required: false
+        nullable: false
+        mappings:
+        - CUSTOMER-NUMBER:
+            required: false
+            nullable: false
+            expression: "$pathParameters.customerId"
 
-### 4.3 Phase 2: Integration & Security (Weeks 5–8)
+## Source: supporting/api/response_200.yaml
 
-| Action ID | Action | Owner | Deliverable | Target Week |
-|-----------|--------|-------|-------------|------------|
-| A016 | **DB2 Adapter Design & Prototype** | Integration Lead | Adapter interface definition, connection pool config, JDBC template integration, error mapping | 6 |
-| A017 | **OAuth2 & JWT Token Server Integration** | Security Lead | Configure Spring Security with external OAuth2 provider (e.g., Keycloak, Auth0); test token validation, refresh | 5 |
-| A018 | **TLS & Certificate Management** | DevOps Lead | Configure Spring Boot TLS 1.2+, certificate chain setup, HTTPS endpoints validated | 5 |
-| A019 | **Observability: Metrics & Tracing Setup** | Backend Dev | Micrometer metrics export (Prometheus format), OpenTelemetry instrumentation, Jaeger collector config | 6 |
-| A020 | **Frontend Error Handling & UX** | Frontend Dev | Error boundary component, user-friendly error messages, retry logic for failed API calls | 6 |
-| A021 | **Security Testing: Penetration & OWASP** | QA Lead | OWASP Top 10 validation, JWT token expiry/refresh edge cases, input injection tests, CORS misconfiguration checks | 7 |
-| A022 | **Integration Test Suite** | QA Lead | Tests with real DB2 adapter (staging); mock/real toggle validation; end-to-end scenarios | 8 |
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - accounts:
+        required: true
+        nullable: false
+        foreach:
+          input: "$zosAssetResponse.commarea.INQACCCZ.\"ACCOUNT-DETAILS\""
+          mappings:
+          - accountId:
+              required: true
+              nullable: false
+              template: "{{$item.\"COMM-ACCNO\"}}"
+          - accountType:
+              required: true
+              nullable: false
+              template: "{{$item.\"COMM-ACC-TYPE\"}}"
+          - currency:
+              required: true
+              nullable: false
+              template: "GBP"
+          - accountNumber:
+              required: false
+              nullable: false
+              template: "{{$item.\"COMM-ACCNO\"}}"
+          - sortCode:
+              required: false
+              nullable: false
+              template: "{{$item.\"COMM-SCODE\"}}"
+          - status:
+              required: true
+              nullable: false
+              template: "ACTIVE"
+    - totalCount:
+        required: false
+        nullable: false
+        expression: "$count($zosAssetResponse.commarea.INQACCCZ.\"ACCOUNT-DETAILS\"\
+          )"
 
-### 4.4 Phase 3: UAT & Hardening (Weeks 9–12)
+## Source: supporting/api/response_401.yaml
 
-| Action ID | Action | Owner | Deliverable | Target Week |
-|-----------|--------|-------|-------------|------------|
-| A023 | **Performance & Load Testing** | QA Lead | JMeter/Gatling load profile; latency p99, error rate under 1000 req/sec; resource utilization baseline | 10 |
-| A024 | **Accessibility Audit (Frontend)** | QA Lead | WCAG 2.1 AA compliance validation; screen reader testing; keyboard navigation; color contrast | 10 |
-| A025 | **Production Deployment Runbook** | DevOps Lead | Step-by-step deployment guide, rollback procedure, health check validation, incident response playbook | 11 |
-| A026 | **User Acceptance Testing (UAT)** | Business Analyst | UAT test cases executed by business users; sign-off on feature completeness and correctness | 12 |
-| A027 | **Documentation Finalization** | Tech Writer | API documentation (OpenAPI + human-readable guide), deployment guide, troubleshooting guide, FAQs | 12 |
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
 
-### 4.5 Phase 4: Go-Live (Weeks 13–14)
+## Source: supporting/api/response_403.yaml
 
-| Action ID | Action | Owner | Deliverable | Target Week |
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+
+## Source: supporting/api/response_404.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+

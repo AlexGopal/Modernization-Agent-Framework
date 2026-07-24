@@ -1,107 +1,460 @@
-# Mapping Matrix for INQACCCU Modernization
+# mapping-matrix.md
 
-**Document ID:** `mapping-matrix-inqacccu-001`  
-**Pipeline:** `mainframe_modernization`  
-**Target Output File:** `mapping-matrix.md`  
-**Purpose:** Traceability matrix linking legacy artifacts through requirements, specifications, business rules, and implementation tests  
-**Last Updated:** 2025
+Status: DRY RUN
 
----
+Agent: MappingMatrixAgent
+Purpose: Create mapping and traceability matrices from requirements through implementation.
 
-## 1. Legacy Artifact to Modern Component Mapping
+## Pipeline Context
 
-### 1.1 Program-Level Mapping
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-| Legacy Artifact          | Legacy Purpose | Modern Component                      | Modern Stack | Mapping Status | Notes |
-|--------------------------|----------------|--------------------------------------|--------------|----------------|-------|
-| `cobol/INQACCCU.cbl`    | CICS-based online inquiry transaction; accepts customer number; returns account relationships | `CustomerAccountsController` (REST endpoint handler) | Spring Boot 3.3.x, Java 21 | ✓ Complete | CICS transaction dispatch → Spring REST `GET /api/v1/customers/{customerId}/accounts` |
-| `cobol/INQACCCU.cbl`    | Business logic: customer lookup, account retrieval, DLI/DB2 access | `CustomerAccountsService` | Spring Boot Service layer | ✓ Complete | Core inquiry logic preserved; DB2 access → mock repository (POC) |
-| `cobol/INQACCCU.cbl`    | Error handling (CICS RESP codes, SQLCODE) | `GlobalExceptionHandler`, custom `ApiException` hierarchy | Spring `@ControllerAdvice` | ✓ Complete | Legacy RESP codes → HTTP status codes (400, 401, 403, 500) |
-| `cobol/INQACCCU.cbl`    | Audit/logging (WS-DATE-TIME, formatted output) | `StructuredLoggingFilter`, `LoggingAspect` | Spring AOP + SLF4J + JSON formatter | ✓ Complete | Flat COBOL logging → structured JSON with correlation ID |
+## Inputs Considered
 
-### 1.2 Data Structure Mapping (Copybooks → Java DTOs)
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- output/business-rules.md
+- output/intended-system.md
+- output/plan.md
+- output/program-analysis.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
 
-| Legacy Copybook          | Legacy Field            | Field Type | Legacy PIC | Modern DTO Class          | Modern Field         | Java Type   | Mapping Rule | Validation |
-|--------------------------|------------------------|------------|------------|---------------------------|----------------------|-------------|--------------|------------|
-| `copybooks/INQACCCUZ.cpy` | CUSTOMER-NUMBER       | Input      | 9(10)      | `CustomerAccountsRequest` | `customerId`         | String      | Numeric string (10 chars) | Pattern: `^\d{10}$`; reject if non-numeric or length ≠ 10 |
-| `copybooks/INQACCCUZ.cpy` | NUMBER-OF-ACCOUNTS    | Output     | S9(8) BINARY | `CustomerAccountsResponse` | `numberOfAccounts`   | Integer     | Binary signed integer | Range: 0–20; fail-safe default 0 if lookup fails |
-| `copybooks/INQACCCUZ.cpy` | CUSTOMER-FOUND        | Output     | X(1)      | `CustomerAccountsResponse` | `customerFound`      | Boolean     | 'Y' → true; 'N' → false | Enum conversion; no null permitted |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-EYE-CATCHER   | Output     | X(4)      | `AccountDetail`          | `eyeCatcher`         | String      | Literal 'ACCT' | Constant validator: must equal "ACCT" |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-SORT-CODE     | Output     | 9(6)      | `AccountDetail`          | `sortCode`           | String      | 6-digit numeric string | Pattern: `^\d{6}$`; reject padding with spaces |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-NUMBER        | Output     | 9(8)      | `AccountDetail`          | `accountNumber`      | String      | 8-digit numeric string | Pattern: `^\d{8}$` |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-TYPE          | Output     | X(8)      | `AccountDetail`          | `accountType`        | String      | Alphanumeric (8 chars max) | Enum: CURRENT, SAVINGS, LOAN, etc. |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-INTEREST-RATE | Output     | 9(4)V99   | `AccountDetail`          | `interestRate`       | BigDecimal  | Decimal: 999.99 format | Scale: 2; precision: 6 |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-OPENED        | Output     | 9(8)      | `AccountDetail`          | `opened`             | LocalDate   | YYYYMMDD → ISO 8601 | Parse as `yyyyMMdd`; return as ISO string |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-OVERDRAFT-LIMIT | Output   | 9(8)      | `AccountDetail`          | `overdraftLimit`     | Long        | 8-digit numeric | Range: 0–99,999,999 |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-LAST-STMT-DATE | Output   | 9(8)      | `AccountDetail`          | `lastStatementDate`  | LocalDate   | YYYYMMDD → ISO 8601 | Parse as `yyyyMMdd`; return as ISO string |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-NEXT-STMT-DATE | Output   | 9(8)      | `AccountDetail`          | `nextStatementDate`  | LocalDate   | YYYYMMDD → ISO 8601 | Parse as `yyyyMMdd`; return as ISO string |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-AVAILABLE-BALANCE | Output | S9(10)V99 | `AccountDetail`          | `availableBalance`    | BigDecimal  | Signed decimal: ±9,999,999.99 | Scale: 2; precision: 12 |
-| `copybooks/ACCOUNT.cpy`  | ACCOUNT-ACTUAL-BALANCE | Output   | S9(10)V99 | `AccountDetail`          | `actualBalance`      | BigDecimal  | Signed decimal: ±9,999,999.99 | Scale: 2; precision: 12 |
-| `copybooks/ACCDB2.cpy`   | ACCOUNT_EYECATCHER through ACCOUNT_ACTUAL_BALANCE | DB2 TABLE columns | SQL DECLARE | `AccountEntity` (JPA) | Mapped via Hibernate annotations | Entity fields + @Column | Direct 1:1 SQL-to-ORM mapping | DB2 domain constraints apply (e.g., NOT NULL on SORT-CODE, ACCOUNT-NUMBER) |
+## Prompt Template
 
----
+# Mapping Matrix Prompt
 
-## 2. Requirement to Spec to Test Traceability
+Generate mapping and traceability matrices.
 
-### 2.1 Functional Requirements → Spec Sections
+Produce:
+- Legacy artifact to modern component mapping
+- Requirement to spec to test traceability
+- Rule-to-test coverage indicators
 
-| Requirement ID | Requirement Title | Requirement Statement                                          | Spec Section | Spec ID | Implementation Status | Test Coverage |
-|----------------|-------------------|----------------------------------------------------------------|--------------|---------|----------------------|---------------|
-| FR-001         | Customer Account Inquiry Acceptance | The system must retrieve account records associated with a given customer number. | Section 2.1.1: Input Specification | `spec-input-001` | ✓ In Progress | `IT001`, `IT002` |
-| FR-002         | Account Retrieval | The system must return a success flag indicating whether the customer was found. | Section 2.2: Data Retrieval Logic | `spec-retrieve-001` | ✓ In Progress | `IT003`, `IT004`, `IT005` |
-| FR-003         | Account Detail Return | Return complete account structure with all 13 fields | Section 2.3: Output Specification | `spec-output-001` | ✓ In Progress | `IT006`, `IT007` |
-| FR-004         | Customer Not Found Handling | If customer not found, set CUSTOMER-FOUND='N' and return zero accounts | Section 2.4.1: Not Found Case | `spec-notfound-001` | ✓ Planned | `IT008` |
-| FR-005         | Multiple Accounts | Support 1–20 accounts per customer | Section 2.3: Output Schema (accounts array) | `spec-output-001` | ✓ Planned | `IT009`, `IT010` |
-| FR-006         | Authentication & Authorization | Enforce OAuth2 JWT bearer token; validate role for inquiry | Section 3.1: Security – Authentication | `spec-security-auth-001` | ✓ Planned | `SEC001`, `SEC002` |
-| FR-007         | Strict Input Validation | Reject non-numeric or wrong-length customer IDs | Section 2.1.2: Input Validation Rules | `spec-input-validation-001` | ✓ Planned | `IV001`, `IV002`, `IV003` |
-| FR-008         | Error Response Standardization | Return JSON error response with HTTP status code and message | Section 4.1: Error Handling | `spec-error-001` | ✓ Planned | `ERR001`, `ERR002`, `ERR003` |
-| NFR-001        | Logging – Structured JSON | Log all requests/responses in structured JSON format with correlation ID | Section 5.1: Observability – Logging | `spec-logging-001` | ✓ Planned | `OBS001`, `OBS002` |
-| NFR-002        | Metrics – Prometheus Export | Export latency, error rate, business metrics | Section 5.2: Observability – Metrics | `spec-metrics-001` | ✓ Planned | `OBS003`, `OBS004` |
-| NFR-003        | Tracing – OpenTelemetry Ready | Instrument for distributed tracing (Jaeger/Datadog compatible) | Section 5.3: Observability – Tracing | `spec-tracing-001` | ✓ Planned | `OBS005` |
-| NFR-004        | TLS Transport Security | All endpoints require TLS 1.2+ | Section 3.2: Transport Security | `spec-security-transport-001` | ✓ Planned | `SEC003`, `SEC004` |
-| NFR-005        | Secrets Management | No secrets in source; use environment variables or Vault | Section 3.3: Secrets Management | `spec-security-secrets-001` | ✓ Planned | `SEC005` |
 
----
+## Input Previews
 
-## 3. Rule-to-Test Coverage Indicators
+## Source: output/intended-system.md
 
-### 3.1 Business Rules-to-Test Traceability
+# intended-system.md
 
-| Business Rule ID | Rule Title | Rule Statement | Rule Type | Spec Reference | Test ID(s) | Test Type | Test Status |
-|------------------|------------|----------------|-----------|----------------|------------|-----------|-------------|
-| BR-001           | Customer Inquiry Acceptance | Accept 10-digit customer number input; set up inquiry context | Input Acceptance | Section 2.1.1 | `IT001`, `IT002` | Functional | ✓ Planned |
-| BR-002           | Account Retrieval from Datastore | Query account records where CUSTOMER-NUMBER matches input | Data Retrieval | Section 2.2 | `IT003`, `IT004`, `IT005` | Functional | ✓ Planned |
-| BR-003           | Strict Input Validation – No Fuzzy Matching | Reject customer IDs that are non-numeric, wrong length, or have spaces | Input Validation | Section 2.1.2 | `IV001`, `IV002`, `IV003`, `IV004` | Functional | ✓ Planned |
-| BR-004           | Account Status Preservation | Return all accounts regardless of status (Active, Inactive, Closed) | Data Retrieval | Section 2.2 | `IT006`, `IT007` | Functional | ✓ Planned |
-| BR-005           | Upper Bound Enforcement – Max 20 Accounts | Limit returned accounts to maximum 20; truncate if more exist | Data Retrieval | Section 2.3 | `IT009`, `IT010` | Functional | ✓ Planned |
-| BR-006           | Customer Not Found Response | If no customer record exists, set CUSTOMER-FOUND='N', return zero accounts | Exception Handling | Section 2.4.1 | `IT008`, `ERR001` | Functional | ✓ Planned |
-| BR-007           | Zero Accounts Valid State | Customer found but has zero accounts is a valid outcome | Exception Handling | Section 2.4.2 | `IT011` | Functional | ✓ Planned |
-| BR-008           | Authentication Enforcement | All requests must present valid OAuth2 JWT bearer token | Security | Section 3.1 | `SEC001`, `SEC002` | Security | ✓ Planned |
-| BR-009           | Role-Based Access Control | Only users with 'CUSTOMER_INQUIRY_READ' role may call endpoint | Security | Section 3.1 | `SEC002`, `SEC006` | Security | ✓ Planned |
-| BR-010           | Secrets Never in Source | Database credentials, OAuth2 secrets never committed to repository | Security | Section 3.3 | `SEC005` | Security | ✓ Planned |
-| BR-011           | Structured Logging – Correlation ID | Every request logged with unique correlation ID for traceability | Observability | Section 5.1 | `OBS001`, `OBS002` | Non-Functional | ✓ Planned |
-| BR-012           | Legacy Behavior Preservation (Default) | All legacy observable behavior maintained as default execution path | Behavioral | Section 1.2 | `IT001`–`IT011` | Functional | ✓ Planned |
+Status: DRY RUN
 
----
+Agent: SystemIntentAgent
+Purpose: Define intended target system architecture and constraints before downstream requirement and spec generation.
 
-## 4. Specification-to-Implementation Task Mapping
+## Pipeline Context
 
-### 4.1 Spec Sections → Dev Tasks
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-| Spec Section | Spec ID | Implementation Task | Task ID | Owner | Delivery Phase | Status |
-|--------------|---------|---------------------|---------|-------|----------------|--------|
-| Section 2.1: Input Specification | `spec-input-001` | Create `CustomerAccountsRequest` DTO and path variable extraction | `DEV-001` | Backend Lead | Phase 1 (Weeks 1–4) | ✓ Planned |
-| Section 2.1.2: Input Validation Rules | `spec-input-validation-001` | Implement `@Pattern` validator; add `CustomerIdValidator` bean | `DEV-002` | Backend Lead | Phase 1 | ✓ Planned |
-| Section 2.2: Data Retrieval Logic | `spec-retrieve-001` | Implement `AccountRepository` (mock) and `CustomerAccountsService.findAccountsByCustomerId()` | `DEV-003` | Backend Lead | Phase 1 | ✓ Planned |
-| Section 2.3: Output Specification | `spec-output-001` | Create `CustomerAccountsResponse` and `AccountDetail` DTOs; configure Jackson serialization | `DEV-004` | Backend Lead | Phase 1 | ✓ Planned |
-| Section 2.4: Error Handling | `spec-error-001` | Implement `GlobalExceptionHandler` with custom exception types (`CustomerNotFoundException`, `InvalidCustomerIdException`) | `DEV-005` | Backend Lead | Phase 1 | ✓ Planned |
-| Section 3.1: Authentication | `spec-security-auth-001` | Configure OAuth2 resource server; add `@PreAuthorize("hasRole('CUSTOMER_INQUIRY_READ')")` annotations | `DEV-006` | Security Lead | Phase 2 (Weeks 5–8) | ✓ Planned |
-| Section 3.1: Authorization | `spec-security-auth-001` | Implement `SecurityConfig` bean; define role mappings | `DEV-007` | Security Lead | Phase 2 | ✓ Planned |
-| Section 3.2: Transport Security | `spec-security-transport-001` | Enable HTTPS in application.yml; configure TLS 1.2+ cipher suites | `DEV-008` | DevOps Lead | Phase 2 | ✓ Planned |
-| Section 3.3: Secrets Management | `spec-security-secrets-001` | Configure Spring Cloud Config (or Vault); externalize DB_URL, OAUTH2_SECRET via environment variables | `DEV-009` | Security Lead | Phase 2 | ✓ Planned |
-| Section 5.1: Logging – Structured JSON | `spec-logging-001` | Add Logback configuration with JSON encoder; implement `LoggingAspect` for request/response logging | `DEV-010` | Backend Lead | Phase 2 | ✓ Planned |
-| Section 5.2: Metrics – Prometheus | `spec-metrics-001` | Add `spring-boot-starter-actuator` and Micrometer; define custom metrics (e.g., `customer_found_rate`) | `DEV-011` | Observability Lead | Phase 2 | ✓ Planned |
-| Section 5.3: Tracing – OpenTelemetry | `spec-tracing-001` | Add OpenTelemetry SDK and auto-instrumentation; configure span exporters | `DEV-012` | Observability Lead | Phase 2 | ✓ Planned |
-| Section 6: API Versioning & Compatibility | `spec-api-001` | Design URL structure `/api/v1/customers/{customerId}/accounts`; document backward-compatibility strategy | `DEV-013` | Architect | Phase 1 | ✓ Planned |
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- cop
+
+[...trimmed for token budget...]
+
+BM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: supporting/api/operation.yaml
 
 ---
+version: "1.0"
+zasset: "INQACCCU"
+
+# Made with Bob
+
+## Source: system-intent.md
+
+# System Intent Blueprint
+
+## Product goal
+Modernize INQACC account inquiry into a web-accessible application with a Spring Boot backend and React frontend while preserving legacy observable behavior.
+
+## Target stack
+- Backend: Java 21, Spring Boot 3.3.x, Maven 3.9+
+- Frontend: React 18.x, TypeScript 5.x, Vite 5.x, Node.js 20 LTS
+- API: REST over HTTPS, OpenAPI 3.0.3
+- Persistence for POC: Mock repository (no live CICS or DB2 connectivity)
+
+## Security baseline
+- Authentication: OAuth2 resource server with JWT bearer tokens
+- Authorization: Role-based access control for account inquiry endpoints
+- Transport: TLS 1.2+
+- Input validation: strict path/query validation and standardized error responses
+- Secrets handling: environment variables or secret manager, never in source control
+
+## Operational baseline
+- Logging: structured JSON logs with correlation ID per request
+- Metrics: request latency, error rate, downstream adapter status
+- Tracing: distributed tracing ready (OpenTelemetry)
+
+## Delivery constraints
+- Preserve legacy behavior as default path
+- Any enhancement must be explicitly marked and toggleable
+- Controllers remain thin, business logic in services
+- Do not connect to real mainframe systems in POC mode
+
+## Source: cobol/INQACCCU.cbl
+
+CBL CICS('SP,EDF,DLI')
+       CBL SQL
+      ******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      ******************************************************************
+      ******************************************************************
+      * This program takes an incoming customer number
+      * and determines which accounts it is associated with
+      * by accessing the datastore & retrieving
+      * the associated account records matching on the customer number
+      ******************************************************************
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. INQACCCU.
+       AUTHOR. James O'Grady.
+
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+      *SOURCE-COMPUTER.   IBM-370 WITH DEBU
+
+[...trimmed for token budget...]
+
+POPULATE-TIME-DATE SECTION.
+       PTD010.
+      D    DISPLAY 'POPULATE-TIME-DATE SECTION'.
+
+           EXEC CICS ASKTIME
+              ABSTIME(WS-U-TIME)
+           END-EXEC.
+
+           EXEC CICS FORMATTIME
+                     ABSTIME(WS-U-TIME)
+                     DDMMYYYY(WS-ORIG-DATE)
+                     TIME(WS-TIME-NOW)
+                     DATESEP
+           END-EXEC.
+
+       PTD999.
+           EXIT.
+
+## Source: copybooks/ABNDINFO.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+           03 ABND-VSAM-KEY.
+              05 ABND-UTIME-KEY                  PIC S9(15) COMP-3.
+              05 ABND-TASKNO-KEY                 PIC 9(4).
+           03 ABND-APPLID                        PIC X(8).
+           03 ABND-TRANID                        PIC X(4).
+           03 ABND-DATE                          PIC X(10).
+           03 ABND-TIME                          PIC X(8).
+           03 ABND-CODE                          PIC X(4).
+           03 ABND-PROGRAM                       PIC X(8).
+           03 ABND-RESPCODE                      PIC S9(8) DISPLAY
+                  SIGN LEADING SEPARATE.
+           03 ABND-RESP2CODE                     PIC S9(8) DISPLAY
+                  SIGN LEADING SEPARATE.
+           03 ABND-SQLCODE                       PIC S9(8) DISPLAY
+                  SIGN LEADING SEPARATE.
+           03 ABND-FREEFORM                      PIC X(600).
+
+## Source: copybooks/ACCDB2.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+           EXEC SQL DECLARE ACCOUNT TABLE
+              ( ACCOUNT_EYECATCHER             CHAR(4),
+                ACCOUNT_CUSTOMER_NUMBER        CHAR(10),
+                ACCOUNT_SORTCODE               CHAR(6) NOT NULL,
+                ACCOUNT_NUMBER                 CHAR(8) NOT NULL,
+                ACCOUNT_TYPE                   CHAR(8),
+                ACCOUNT_INTEREST_RATE          DECIMAL(4, 2),
+                ACCOUNT_OPENED                 DATE,
+                ACCOUNT_OVERDRAFT_LIMIT        INTEGER,
+                ACCOUNT_LAST_STATEMENT         DATE,
+                ACCOUNT_NEXT_STATEMENT         DATE,
+                ACCOUNT_AVAILABLE_BALANCE      DECIMAL(10, 2),
+                ACCOUNT_ACTUAL_BALANCE         DECIMAL(10, 2) )
+           END-EXEC.
+
+## Source: copybooks/ACCOUNT.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+              03 ACCOUNT-DATA.
+                 05 ACCOUNT-EYE-CATCHER        PIC X(4).
+                 88 ACCOUNT-EYECATCHER-VALUE        VALUE 'ACCT'.
+                 05 ACCOUNT-CUST-NO            PIC 9(10).
+                 05 ACCOUNT-KEY.
+                    07 ACCOUNT-SORT-CODE       PIC 9(6).
+                    07 ACCOUNT-NUMBER          PIC 9(8).
+                 05 ACCOUNT-TYPE               PIC X(8).
+                 05 ACCOUNT-INTEREST-RATE      PIC 9(4)V99.
+                 05 ACCOUNT-OPENED             PIC 9(8).
+
+[...trimmed for token budget...]
+
+OUNT-NEXT-STMT-DATE     PIC 9(8).
+                 05 ACCOUNT-NEXT-STMT-GROUP
+                   REDEFINES ACCOUNT-NEXT-STMT-DATE.
+                    07 ACCOUNT-NEXT-STMT-DAY   PIC 99.
+                    07 ACCOUNT-NEXT-STMT-MONTH PIC 99.
+                    07 ACCOUNT-NEXT-STMT-YEAR  PIC 9999.
+                 05 ACCOUNT-AVAILABLE-BALANCE  PIC S9(10)V99.
+                 05 ACCOUNT-ACTUAL-BALANCE     PIC S9(10)V99.
+
+## Source: copybooks/CUSTOMER.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *
+      *                                                                *
+      ******************************************************************
+           03 CUSTOMER-RECORD.
+              05 CUSTOMER-EYECATCHER                 PIC X(4).
+                 88 CUSTOMER-EYECATCHER-VALUE        VALUE 'CUST'.
+              05 CUSTOMER-KEY.
+                 07 CUSTOMER-SORTCODE                PIC 9(6) DISPLAY.
+                 07 CUSTOMER-NUMBER                  PIC 9(10) DISPLAY.
+              05 CUSTOMER-NAME.
+                 07 CUSTOMER-TITLE                   PIC X(10).
+                 07 CUSTOMER-FIRST-NAME              PIC X(50).
+                 07 CUSTOMER-LAST-NAME               PIC X(50).
+              05 CUSTOMER-DOB.
+                 07 CU
+
+[...trimmed for token budget...]
+
+EATED-MONTH           PIC 99 DISPLAY.
+                 07 CUSTOMER-CREATED-YEAR            PIC 9999 DISPLAY.
+              05 CUSTOMER-CREDIT-SCORE               PIC 999.
+              05 CUSTOMER-CS-REVIEW-DATE.
+                 07 CUSTOMER-CS-REVIEW-DAY           PIC 99 DISPLAY.
+                 07 CUSTOMER-CS-REVIEW-MONTH         PIC 99 DISPLAY.
+                 07 CUSTOMER-CS-REVIEW-YEAR          PIC 9999 DISPLAY.
+
+## Source: copybooks/INQACCCU.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+          03 NUMBER-OF-ACCOUNTS        PIC S9(8) BINARY.
+          03 CUSTOMER-NUMBER           PIC 9(10).
+          03 COMM-SUCCESS              PIC X.
+          03 COMM-FAIL-CODE            PIC X.
+          03 CUSTOMER-FOUND            PIC X.
+          03 COMM-PCB-POINTER          POINTER.
+          03 ACCOUNT-DETAILS OCCURS 1 TO 20 DEPENDING ON
+              NUMBER-OF-ACCOUNTS.
+            05 COMM-EYE                  PIC X(4).
+            05 COMM-CUSTNO               PIC X(10).
+            05 COMM-SCODE                PIC X(6).
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: copybooks/INQACCCZ.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+          03 NUMBER-OF-ACCOUNTS        PIC S9(8) BINARY.
+          03 CUSTOMER-NUMBER           PIC 9(10).
+          03 COMM-SUCCESS              PIC X.
+          03 COMM-FAIL-CODE            PIC X.
+          03 CUSTOMER-FOUND            PIC X.
+          03 COMM-PCB-POINTER          PIC X(4).
+          03 ACCOUNT-DETAILS OCCURS 1 TO 20 DEPENDING ON
+              NUMBER-OF-ACCOUNTS.
+            05 COMM-EYE                  PIC X(4).
+            05 COMM-CUSTNO               PIC X(10).
+            05 COMM-SCODE                PIC X(6).
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: copybooks/INQCUSTZ.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      ******************************************************************
+          03 INQCUST-EYE                  PIC X(4).
+          03 INQCUST-SCODE                PIC X(6).
+          03 INQCUST-CUSTNO               PIC 9(10).
+          03 INQCUST-NAME.
+             05 INQCUST-TITLE             PIC X(10).
+             05 INQCUST-FIRST-NAME        PIC X(50).
+             05 INQCUST-LAST-NAME         PIC X(50).
+          03 INQCUST-DOB.
+             05 INQCUST-DOB-DD            PIC 99 DISPLAY.
+             05 INQCUST-DOB-MM            PIC 99 DISPLAY.
+             05 INQCUST-DOB-YYYY          PIC 9999 DISPLAY.
+          03 INQCUST-PHONE                PIC X(20).
+          03 INQCUST-A
+
+[...trimmed for token budget...]
+
+DISPLAY.
+          03 INQCUST-CREDIT-SCORE         PIC 999.
+          03 INQCUST-CS-REVIEW-DT.
+             05 INQCUST-CS-REVIEW-DD      PIC 99 DISPLAY.
+             05 INQCUST-CS-REVIEW-MM      PIC 99 DISPLAY.
+             05 INQCUST-CS-REVIEW-YYYY    PIC 9999 DISPLAY.
+          03 INQCUST-INQ-SUCCESS          PIC X.
+          03 INQCUST-INQ-FAIL-CD          PIC X.
+          03 INQCUST-PCB-POINTER          PIC X(4).
+
+## Source: copybooks/SORTCODE.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: output/business-rules.md
+
+# business-rules.md
+
+Status: DRY RUN
+
+Agent: BusinessRulesAgent
+Purpose: Extract and normalize business rules from legacy analysis and source artifacts.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- system-intent.md
+- output/program-analysis.md
+
+## Prompt Template
+
+# Business Rules Prompt
+
+Extract business rules from legacy sources and analysis outputs.
+
+Produce:
+- Rule identifier
+- Rule statement
+- Trigger conditions
+- Inputs and outputs
+- Error conditions
+
+Avoid implementation details where possible.
+
+
+## Input Previews
+
+## Source:
+
+[...trimmed for token budget...]
+
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+

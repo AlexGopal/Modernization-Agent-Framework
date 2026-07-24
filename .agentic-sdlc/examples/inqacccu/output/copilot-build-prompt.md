@@ -1,400 +1,497 @@
+# copilot-build-prompt.md
+
+Status: DRY RUN
+
+Agent: CopilotPromptAgent
+Purpose: Generate implementation prompts that can be pasted directly into GitHub Copilot.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/plan.md
+- output/program-analysis.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.md
+- output/openapi.yaml
+
+## Prompt Template
+
 # Copilot Implementation Prompt
 
-## Purpose
-Generate implementation code for the INQACCCU modernization initiative—transforming a legacy COBOL CICS customer-account inquiry program into a Spring Boot 3.3.x REST API with React 18.x frontend. Use this prompt to drive iterative pull requests aligned with the mainframe modernization pipeline.
+Use generated artifacts to produce implementation code in iterative pull requests.
+
+Inputs:
+- requirements.md
+- spec.md
+- plan.md
+- tasks.md
+- openapi.yaml
+- mapping-matrix.md
+
+Guidance:
+- Implement smallest vertical slice first
+- Keep controllers thin
+- Keep business logic in services
+- Add tests for every business rule
+
+
+## Input Previews
+
+## Source: output/intended-system.md
+
+# intended-system.md
+
+Status: DRY RUN
+
+Agent: SystemIntentAgent
+Purpose: Define intended target system architecture and constraints before downstream requirement and spec generation.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- cop
+
+[...trimmed for token budget...]
+
+BM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: supporting/api/operation.yaml
 
 ---
+version: "1.0"
+zasset: "INQACCCU"
 
-## Context & Mandatory Constraints
+# Made with Bob
 
-### System Intent (Binding Architecture)
-- **Backend Stack:** Java 21, Spring Boot 3.3.x, Maven 3.9+
-- **Frontend Stack:** React 18.x, TypeScript 5.x, Vite 5.x, Node.js 20 LTS
-- **API Contract:** REST over HTTPS, OpenAPI 3.0.3
-- **Authentication:** OAuth2 resource server with JWT bearer tokens
-- **Authorization:** Role-based access control (RBAC) for customer-account inquiry endpoints
-- **Persistence (POC):** Mock repository layer (no live CICS or DB2 connectivity)
-- **Observability:** Structured JSON logging with correlation IDs; OpenTelemetry-ready tracing
-- **Security Baseline:** TLS 1.2+, strict input validation, secrets via environment variables or secret manager only
+## Source: system-intent.md
 
-### Preservation & Enhancement Rules
-1. **Default Behavior:** Preserve all legacy observable behavior from INQACCCU COBOL program as the default execution path
-2. **Future Enhancements:** Any new functionality must be explicitly marked and toggleable; do not change default behavior
-3. **Architecture:** Keep controllers thin; business logic resides in service layer; repositories abstract persistence
-4. **No Mainframe Mocking:** Do not attempt to call real CICS or DB2 systems in POC mode
+# System Intent Blueprint
 
----
+## Product goal
+Modernize INQACC account inquiry into a web-accessible application with a Spring Boot backend and React frontend while preserving legacy observable behavior.
 
-## Feature: Customer Account Relationship Inquiry REST API
+## Target stack
+- Backend: Java 21, Spring Boot 3.3.x, Maven 3.9+
+- Frontend: React 18.x, TypeScript 5.x, Vite 5.x, Node.js 20 LTS
+- API: REST over HTTPS, OpenAPI 3.0.3
+- Persistence for POC: Mock repository (no live CICS or DB2 connectivity)
 
-### Functional Scope
+## Security baseline
+- Authentication: OAuth2 resource server with JWT bearer tokens
+- Authorization: Role-based access control for account inquiry endpoints
+- Transport: TLS 1.2+
+- Input validation: strict path/query validation and standardized error responses
+- Secrets handling: environment variables or secret manager, never in source control
 
-**Endpoint:** `GET /api/v1/customers/{customerId}/accounts`
+## Operational baseline
+- Logging: structured JSON logs with correlation ID per request
+- Metrics: request latency, error rate, downstream adapter status
+- Tracing: distributed tracing ready (OpenTelemetry)
 
-**Input:**
-- Path parameter: `customerId` (10-digit numeric string, required)
-- Header: `Authorization: Bearer {JWT}` (required, OAuth2 resource server)
+## Delivery constraints
+- Preserve legacy behavior as default path
+- Any enhancement must be explicitly marked and toggleable
+- Controllers remain thin, business logic in services
+- Do not connect to real mainframe systems in POC mode
 
-**Output (200 OK):**
-```json
-{
-  "customerId": "0123456789",
-  "customerFound": true,
-  "numberOfAccounts": 2,
-  "accounts": [
-    {
-      "eyeCatcher": "ACCT",
-      "accountNumber": "12345678",
-      "sortCode": "123456",
-      "balance": "9876543.21",
-      "interestRate": "2.5",
-      "statementDate": "2025-01-15"
-    }
-  ]
-}
-```
+## Source: output/business-rules.md
 
-**Error Responses:**
-- `400 Bad Request`: Invalid customer ID format or missing required fields
-- `401 Unauthorized`: Missing or invalid JWT
-- `403 Forbidden`: JWT valid but user role insufficient for `ROLE_CUSTOMER_INQUIRY`
-- `500 Internal Server Error`: Unexpected server error
+# business-rules.md
 
-**Legacy Business Rules Mapped:**
-- **BR001:** Accept 10-digit customer number; return CUSTOMER-FOUND flag (true/false) and 0–20 account records
-- **BR002:** Validate customer number format strictly; reject non-numeric or invalid length inputs
-- **BR003:** Return all associated accounts regardless of status (Active, Inactive, Closed)
-- **BR004:** Preserve legacy response structure and field mappings from COBOL copybooks (INQACCCUZ, ACCOUNT, ACCDB2)
+Status: DRY RUN
 
----
+Agent: BusinessRulesAgent
+Purpose: Extract and normalize business rules from legacy analysis and source artifacts.
 
-## Implementation Guidance
+## Pipeline Context
 
-### Phase 1: Foundation & API Contract (Weeks 1–4)
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-#### Iteration 1A: Spring Boot Scaffolding (TASK-001)
+## Inputs Considered
 
-**Objective:** Initialize Maven-based Spring Boot 3.3.x project with core dependencies.
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- system-intent.md
+- output/program-analysis.md
 
-**Deliverables:**
-1. Create `pom.xml` with:
-   - Spring Boot 3.3.x BOM
-   - Spring Web, Spring Security (OAuth2 Resource Server)
-   - Spring Data (mock persistence ready)
-   - Micrometer Metrics, OpenTelemetry SDK
-   - Jackson for JSON serialization
-   - Lombok for boilerplate reduction
-   - JUnit 5, Mockito for testing
-2. Configure Maven profiles: `dev`, `test`, `prod`
-3. Create `.gitignore` to exclude secrets, build artifacts, IDE files
-4. Set Java 21 target in `<source>` and `<target>`
-5. Establish directory structure: `src/main/java`, `src/test/java`, `src/main/resources`
+## Prompt Template
 
-**Acceptance Criteria:**
-- [ ] AC-001.1: `mvn clean verify` succeeds; application starts with `mvn spring-boot:run`
-- [ ] AC-001.2: No secrets in `pom.xml`; all sensitive configuration via environment variables
-- [ ] AC-001.3: Build profiles selectable without code changes
+# Business Rules Prompt
 
-**Pull Request Checklist:**
-- All dependencies pinned to specific versions
-- No `SNAPSHOT` or `RELEASE` versions in production profile
-- Dependency security scan passes (no known CVEs)
+Extract business rules from legacy sources and analysis outputs.
 
----
+Produce:
+- Rule identifier
+- Rule statement
+- Trigger conditions
+- Inputs and outputs
+- Error conditions
 
-#### Iteration 1B: Application Properties & Security Configuration (TASK-002)
+Avoid implementation details where possible.
 
-**Objective:** Configure Spring Boot application for OAuth2 resource server and environment-driven secrets.
 
-**Deliverables:**
-1. Create `application.yml` (shared across profiles):
-   ```yaml
-   spring:
-     application:
-       name: inqacccu-api
-     security:
-       oauth2:
-         resourceserver:
-           jwt:
-             issuer-uri: ${JWT_ISSUER_URI}
-             jwk-set-uri: ${JWT_JWK_SET_URI}
-   server:
-     servlet:
-       context-path: /api/v1
-     ssl:
-       enabled: true
-       key-store: ${SERVER_SSL_KEYSTORE_PATH:#{null}}
-       key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
-   management:
-     endpoints:
-       web:
-         exposure:
-           include: health,metrics,info
-   ```
-2. Create `application-dev.yml`:
-   - Override `ssl.enabled: false` for local development
-   - Configure in-memory mock OAuth2 issuer for testing
-3. Create `SecurityConfig` class:
-   - Enable OAuth2 resource server filter chain
-   - Configure RBAC: permit `/actuator/health` unauthenticated; require `ROLE_CUSTOMER_INQUIRY` for account endpoint
-   - Add `JwtAuthenticationConverter` to map JWT claims to Spring Security authorities
-4. Create `SecretValidator` bean to validate required environment variables at startup (e.g., `JWT_ISSUER_URI`, `JWT_JWK_SET_URI`)
+## Input Previews
 
-**Acceptance Criteria:**
-- [ ] AC-002.1: Application starts; `/actuator/health` returns 200 without JWT
-- [ ] AC-002.2: Unauthenticated requests to `/api/v1/customers/{id}/accounts` return 401
-- [ ] AC-002.3: Missing required secrets cause startup failure with clear error message
-- [ ] AC-002.4: Valid JWT with `ROLE_CUSTOMER_INQUIRY` claim passes authorization filter
-- [ ] AC-002.5: Valid JWT without required role returns 403
+## Source:
 
-**Pull Request Checklist:**
-- No hardcoded secrets; all externalized to environment variables
-- `SecurityConfig` documented with Javadoc explaining RBAC rules
-- Unit tests for `JwtAuthenticationConverter` and `SecretValidator`
+[...trimmed for token budget...]
 
----
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
 
-#### Iteration 1C: Data Models & DTOs (TASK-003)
+## Source: output/requirements.md
 
-**Objective:** Define Java DTOs representing legacy COBOL copybook structures.
+# requirements.md
 
-**Deliverables:**
-1. Create `com.modernize.inqacccu.dto` package with:
-   - `CustomerAccountsRequest` (if needed for input validation)
-   - `CustomerAccountsResponse` wrapper DTO
-   - `AccountDTO` (individual account record)
-   - `ErrorResponse` (standardized error payload)
-2. Map legacy COBOL fields to Java:
-   - `CUSTOMER-NUMBER` (10 digits) → `String customerId`
-   - `CUSTOMER-FOUND` ('Y'/'N') → `Boolean customerFound`
-   - `NUMBER-OF-ACCOUNTS` (S9(8) BINARY) → `Integer numberOfAccounts`
-   - Account fields: `accountNumber`, `sortCode`, `balance`, `interestRate`, `statementDate`
-3. Add Jackson annotations:
-   - `@JsonSerialize` for custom numeric formatting (balance, interest rate)
-   - `@JsonProperty` to control field naming if needed
-   - `@Schema` (OpenAPI) to document each field
-4. Implement `equals`, `hashCode`, `toString` using Lombok `@Data` or `@EqualsAndHashCode`
+Status: DRY RUN
 
-**Example Structure:**
-```java
-@Data
-@Builder
-@Schema(description = "Customer account inquiry response")
-public class CustomerAccountsResponse {
-  @Schema(description = "10-digit customer ID", example = "0123456789")
-  private String customerId;
-  
-  @Schema(description = "Whether customer was found")
-  private Boolean customerFound;
-  
-  @Schema(description = "Number of associated accounts (0-20)")
-  @Min(0) @Max(20)
-  private Integer numberOfAccounts;
-  
-  @Schema(description = "List of account records")
-  private List<AccountDTO> accounts;
-}
+Agent: RequirementsAgent
+Purpose: Produce structured requirements from business rules and legacy findings.
 
-@Data
-@Builder
-public class AccountDTO {
-  private String eyeCatcher;
-  private String accountNumber;
-  private String sortCode;
-  private String balance;
-  private String interestRate;
-  private String statementDate;
-}
+## Pipeline Context
 
-@Data
-@Builder
-public class ErrorResponse {
-  private Integer status;
-  private String message;
-  private String correlationId;
-  private LocalDateTime timestamp;
-  private Map<String, Object> details;
-}
-```
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-**Acceptance Criteria:**
-- [ ] AC-003.1: All DTOs compile without errors
-- [ ] AC-003.2: Jackson serialization/deserialization works end-to-end (verified via test)
-- [ ] AC-003.3: OpenAPI `@Schema` annotations populated; validate via OpenAPI spec generation
+## Inputs Considered
 
-**Pull Request Checklist:**
-- Immutable DTOs (use `@Builder`, no setters)
-- No business logic in DTOs; data carriers only
-- Comprehensive Javadoc for each DTO class and field
+- system-intent.md
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- output/business-rules.md
+- output/intended-system.md
+- output/program-analysis.md
+
+## Prompt Template
+
+# Requirements Prompt
+
+Convert business rules and analysis into clear functional and non-functional requirements.
+
+Inputs must include `intended-system.md` when available.
+All requirements must align with target stack, versions,
+
+[...trimmed for token budget...]
+
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: output/spec.md
+
+# spec.md
+
+Status: DRY RUN
+
+Agent: SpecAgent
+Purpose: Generate implementation-ready functional and technical specification.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/intended-system.md
+- output/program-analysis.md
+- output/requirements.md
+
+## Prompt Template
+
+# Spec Prompt
+
+Create implementation-ready specification from requirements.
+
+Inputs must include `intended-system.md` when avai
+
+[...trimmed for token budget...]
+
+pping.yaml
 
 ---
+version: "1.0"
+response_200.yaml:
+  condition: "$exists($zosAssetResponse.commarea.INQACCCZ) or
+    $not($exists($zosAssetResponse.abendCode))"
+  httpStatusCode: 200
+response_400.yaml:
+  httpStatusCode: 400
+response_401.yaml:
+  httpStatusCode: 401
+response_403.yaml:
+  httpStatusCode: 403
+response_404.yaml:
+  httpStatusCode: 404
+response_500.yaml:
+  condition: true
+  httpStatusCode: 500
 
-#### Iteration 1D: Mock Repository Layer (TASK-004)
+# Made with Bob
 
-**Objective:** Implement in-memory mock repository for POC phase (no DB2 or CICS connectivity).
+## Source: output/openapi.yaml
 
-**Deliverables:**
-1. Create `com.modernize.inqacccu.repository` package with:
-   - `AccountRepository` interface (contract for persistence)
-   - `MockAccountRepository` implementation (hardcoded test data)
-2. Define repository contract:
-   ```java
-   public interface AccountRepository {
-     Optional<CustomerAccountRecord> findAccountsByCustomerId(String customerId);
-   }
-   ```
-3. Implement mock with fixture data:
-   ```java
-   @Repository
-   public class MockAccountRepository implements AccountRepository {
-     private static final Map<String, CustomerAccountRecord> DATA = Map.ofEntries(
-       Map.entry("0123456789", CustomerAccountRecord.builder()
-         .customerId("0123456789")
-         .customerFound(true)
-         .accounts(List.of(
-           AccountDTO.builder()
-             .accountNumber("12345678")
-             .sortCode("123456")
-             .balance("9876543.21")
-             .interestRate("2.5")
-             .statementDate("2025-01-15")
-             .build()
-         ))
-         .build())
-     );
-     
-     @Override
-     public Optional<CustomerAccountRecord> findAccountsByCustomerId(String customerId) {
-       return Optional.ofNullable(DATA.get(customerId));
-     }
-   }
-   ```
-4. Add note in code: "POC mock data; replace with DB2/CICS adapter in production"
+# openapi.yaml
 
-**Acceptance Criteria:**
-- [ ] AC-004.1: `MockAccountRepository` returns valid data for known customer IDs
-- [ ] AC-004.2: Unknown customer IDs return empty `Optional`
-- [ ] AC-004.3: No network calls or external dependencies
+Status: DRY RUN
 
-**Pull Request Checklist:**
-- Test data covers: existing customer (1–20 accounts), non-existent customer
-- Repository interface documented with Javadoc
-- Comments clearly mark mock implementation as POC-only
+Agent: OpenApiAgent
+Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
 
----
+## Pipeline Context
 
-#### Iteration 1E: Service Layer & Business Logic (TASK-005)
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-**Objective:** Implement business logic layer; keep controller thin.
+## Inputs Considered
 
-**Deliverables:**
-1. Create `com.modernize.inqacccu.service` package with:
-   - `CustomerAccountsService` interface
-   - `CustomerAccountsServiceImpl` implementation
-2. Service methods:
-   ```java
-   public interface CustomerAccountsService {
-     CustomerAccountsResponse inquireAccounts(String customerId);
-   }
-   ```
-3. Implement business logic:
-   ```java
-   @Service
-   @Slf4j
-   public class CustomerAccountsServiceImpl implements CustomerAccountsService {
-     private final AccountRepository accountRepository;
-     private final InputValidator inputValidator;
-     
-     @Autowired
-     public CustomerAccountsServiceImpl(AccountRepository accountRepository, InputValidator inputValidator) {
-       this.accountRepository = accountRepository;
-       this.inputValidator = inputValidator;
-     }
-     
-     @Override
-     public CustomerAccountsResponse inquireAccounts(String customerId) {
-       // BR002: Validate input strictly
-       inputValidator.validateCustomerId(customerId);
-       
-       // BR001: Lookup customer and accounts
-       Optional<CustomerAccountRecord> record = accountRepository.findAccountsByCustomerId(customerId);
-       
-       if (record.isEmpty()) {
-         // BR001: customer not found
-         return CustomerAccountsResponse.builder()
-           .customerId(customerId)
-           .customerFound(false)
-           .numberOfAccounts(0)
-           .accounts(Collections.emptyList())
-           .build();
-       }
-       
-       // BR004: Return all accounts (preserved from legacy)
-       CustomerAccountRecord data = record.get();
-       return CustomerAccountsResponse.builder()
-         .customerId(customerId)
-         .customerFound(true)
-         .numberOfAccounts(data.getAccounts().size())
-         .accounts(data.getAccounts())
-         .build();
-     }
-   }
-   ```
-4. Create `InputValidator` utility:
-   ```java
-   @Component
-   public class InputValidator {
-     public void validateCustomerId(String customerId) throws InvalidInputException {
-       if (customerId == null || !customerId.matches("^\\d{10}$")) {
-         throw new InvalidInputException("Customer ID must be exactly 10 digits");
-       }
-     }
-   }
-   ```
+- system-intent.md
+- supporting/api/operation.yaml
+- supporting/api/request.yaml
+- supporting/api/response_200.yaml
+- supporting/api/response_401.yaml
+- supporting/api/response_403.yaml
+- supporting/api/response_404.yaml
+- supporting/api/response_500.yaml
+- supporting/api/response_mapping.yaml
+- supporting/zosAssets/zosAsset.yaml
+- output/business-rules.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/plan.md
+- output/program-analysis.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.md
 
-**Acceptance Criteria:**
-- [ ] AC-005.1: Valid customer ID returns populated response
-- [ ] AC-005.2: Invalid customer ID throws `InvalidInputException`
-- [ ] AC-005.3: Non-existent customer ID returns `customerFound=false`, `numberOfAccounts=0`
-- [ ] AC-005.4: All business rules (BR001–BR004) implemented and tested
+## P
 
-**Pull Request Checklist:**
-- Service logic isolated; no HTTP concerns
-- Comprehensive unit tests for each business rule
-- Logging at INFO level for customer lookups (no PII in logs unless needed for debugging)
+[...trimmed for token budget...]
+
+able: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+
+## Source: supporting/api/response_500.yaml
 
 ---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
 
-#### Iteration 1F: REST Controller & Error Handling (TASK-006)
+## Source: supporting/api/operation.yaml
 
-**Objective:** Implement REST controller; integrate service layer; define error handling.
+---
+version: "1.0"
+zasset: "INQACCCU"
 
-**Deliverables:**
-1. Create `com.modernize.inqacccu.controller` package with:
-   - `CustomerAccountsController` REST endpoint handler
-   - `GlobalExceptionHandler` for centralized error responses
-2. Implement controller:
-   ```java
-   @RestController
-   @RequestMapping("/customers")
-   @Slf4j
-   public class CustomerAccountsController {
-     private final CustomerAccountsService service;
-     
-     @Autowired
-     public CustomerAccountsController(CustomerAccountsService service) {
-       this.service = service;
-     }
-     
-     @GetMapping("/{customerId}/accounts")
-     @PreAuthorize("hasRole('ROLE_CUSTOMER_INQUIRY')")
-     @Operation(summary = "Inquire customer accounts", security = @SecurityRequirement(name = "bearer-jwt"))
-     @ApiResponses({
-       @ApiResponse(responseCode = "200", description = "Accounts found or customer not found"),
-       @ApiResponse(responseCode = "400", description = "Invalid customer ID format"),
-       @ApiResponse(responseCode = "401", description = "Missing or invalid JWT"),
-       @ApiResponse(responseCode = "403", description = "Insufficient role"),
-       @ApiResponse(responseCode = "500", description = "Server error")
-     })
-     public ResponseEntity<CustomerAccountsResponse> inquireAccounts(
-         @PathVariable @Schema(description = "10-digit customer ID", example = "0123
+# Made with Bob
+
+## Source: supporting/api/request.yaml
+
+---
+version: "1.2"
+mappings:
+- commarea:
+    mappings:
+    - INQACCCZ:
+        required: false
+        nullable: false
+        mappings:
+        - CUSTOMER-NUMBER:
+            required: false
+            nullable: false
+            expression: "$pathParameters.customerId"
+
+## Source: supporting/api/response_200.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - accounts:
+        required: true
+        nullable: false
+        foreach:
+          input: "$zosAssetResponse.commarea.INQACCCZ.\"ACCOUNT-DETAILS\""
+          mappings:
+          - accountId:
+              required: true
+              nullable: false
+              template: "{{$item.\"COMM-ACCNO\"}}"
+          - accountType:
+              required: true
+              nullable: false
+              template: "{{$item.\"COMM-ACC-TYPE\"}}"
+          - currency:
+              required: true
+              nullable: false
+              template: "GBP"
+          - accountNumber:
+              required: false
+              nullable: false
+              template: "{{$item.\"COMM-ACCNO\"}}"
+          - sortCode:
+              required: false
+              nullable: false
+              template: "{{$item.\"COMM-SCODE\"}}"
+          - status:
+              required: true
+              nullable: false
+              template: "ACTIVE"
+    - totalCount:
+        required: false
+        nullable: false
+        expression: "$count($zosAssetResponse.commarea.INQACCCZ.\"ACCOUNT-DETAILS\"\
+          )"
+
+## Source: supporting/api/response_401.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+
+## Source: supporting/api/response_403.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+
+## Source: supporting/api/response_404.yaml
+
+---
+version: "1.2"
+mappings:
+- body:
+    mappings:
+    - code:
+        required: true
+        nullable: false
+        template: "ERROR_CODE"
+    - message:
+        required: true
+        nullable: false
+        template: "Error message"
+

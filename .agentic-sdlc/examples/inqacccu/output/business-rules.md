@@ -1,387 +1,394 @@
-# Business Rules
-
-**Document ID:** `business-rules-inqacccu-001`  
-**Pipeline:** `mainframe_modernization`  
-**Target Artifact:** INQACCCU Business Rules Extraction  
-**Generated From:** Legacy COBOL Analysis, Copybooks, System Intent  
+# business-rules.md
 
----
+Status: DRY RUN
 
-## Rule Inventory
+Agent: BusinessRulesAgent
+Purpose: Extract and normalize business rules from legacy analysis and source artifacts.
 
-### BR001: Customer Inquiry Acceptance Rule
+## Pipeline Context
 
-**ID:** BR001  
-**Statement:** Accept a customer number (10 digits) as input and initiate an account relationship inquiry.  
-**Trigger Condition:** Incoming CICS transaction with valid 10-digit customer number in CUSTOMER-NUMBER field.  
-**Input:** 
-- CUSTOMER-NUMBER (PIC 9(10))
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
 
-**Output:**
-- CUSTOMER-FOUND (PIC X: 'Y' or 'N')
-- NUMBER-OF-ACCOUNTS (PIC S9(8) BINARY)
-- ACCOUNT-DETAILS array (0–20 occurrences)
+## Inputs Considered
 
-**Error Condition:** 
-- If customer number is invalid or missing, CUSTOMER-FOUND = 'N', NUMBER-OF-ACCOUNTS = 0.
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+- system-intent.md
+- output/program-analysis.md
 
-**Modernization Notes:** Map to Spring Boot REST endpoint `GET /api/v1/customers/{customerId}/accounts` with OAuth2 authorization.
+## Prompt Template
 
----
+# Business Rules Prompt
+
+Extract business rules from legacy sources and analysis outputs.
+
+Produce:
+- Rule identifier
+- Rule statement
+- Trigger conditions
+- Inputs and outputs
+- Error conditions
+
+Avoid implementation details where possible.
+
+
+## Input Previews
+
+## Source: system-intent.md
+
+# System Intent Blueprint
+
+## Product goal
+Modernize INQACC account inquiry into a web-accessible application with a Spring Boot backend and React frontend while preserving legacy observable behavior.
+
+## Target stack
+- Backend: Java 21, Spring Boot 3.3.x, Maven 3.9+
+- Frontend: React 18.x, TypeScript 5.x, Vite 5.x, Node.js 20 LTS
+- API: REST over HTTPS, OpenAPI 3.0.3
+- Persistence for POC: Mock repository (no live CICS or DB2 connectivity)
+
+## Security baseline
+- Authentication: OAuth2 resource server with JWT bearer tokens
+- Authorization: Role-based access control for account inquiry endpoints
+- Transport: TLS 1.2+
+- Input validation: strict path/query validation and standardized error responses
+- Secrets handling: environment variables or secret manager, never in source control
+
+## Operational baseline
+- Logging: structured JSON logs with correlation ID per request
+- Metrics: request latency, error rate, downstream adapter status
+- Tracing: distributed tracing ready (OpenTelemetry)
+
+## Delivery constraints
+- Preserve legacy behavior as default path
+- Any enhancement must be explicitly marked and toggleable
+- Controllers remain thin, business logic in services
+- Do not connect to real mainframe systems in POC mode
+
+## Source: cobol/INQACCCU.cbl
+
+CBL CICS('SP,EDF,DLI')
+       CBL SQL
+      ******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      ******************************************************************
+      ******************************************************************
+      * This program takes an incoming customer number
+      * and determines which accounts it is associated with
+      * by accessing the datastore & retrieving
+      * the associated account records matching on the customer number
+      ******************************************************************
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. INQACCCU.
+       AUTHOR. James O'Grady.
+
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+      *SOURCE-COMPUTER.   IBM-370 WITH DEBU
+
+[...trimmed for token budget...]
+
+POPULATE-TIME-DATE SECTION.
+       PTD010.
+      D    DISPLAY 'POPULATE-TIME-DATE SECTION'.
+
+           EXEC CICS ASKTIME
+              ABSTIME(WS-U-TIME)
+           END-EXEC.
+
+           EXEC CICS FORMATTIME
+                     ABSTIME(WS-U-TIME)
+                     DDMMYYYY(WS-ORIG-DATE)
+                     TIME(WS-TIME-NOW)
+                     DATESEP
+           END-EXEC.
+
+       PTD999.
+           EXIT.
+
+## Source: copybooks/ABNDINFO.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+           03 ABND-VSAM-KEY.
+              05 ABND-UTIME-KEY                  PIC S9(15) COMP-3.
+              05 ABND-TASKNO-KEY                 PIC 9(4).
+           03 ABND-APPLID                        PIC X(8).
+           03 ABND-TRANID                        PIC X(4).
+           03 ABND-DATE                          PIC X(10).
+           03 ABND-TIME                          PIC X(8).
+           03 ABND-CODE                          PIC X(4).
+           03 ABND-PROGRAM                       PIC X(8).
+           03 ABND-RESPCODE                      PIC S9(8) DISPLAY
+                  SIGN LEADING SEPARATE.
+           03 ABND-RESP2CODE                     PIC S9(8) DISPLAY
+                  SIGN LEADING SEPARATE.
+           03 ABND-SQLCODE                       PIC S9(8) DISPLAY
+                  SIGN LEADING SEPARATE.
+           03 ABND-FREEFORM                      PIC X(600).
+
+## Source: copybooks/ACCDB2.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+           EXEC SQL DECLARE ACCOUNT TABLE
+              ( ACCOUNT_EYECATCHER             CHAR(4),
+                ACCOUNT_CUSTOMER_NUMBER        CHAR(10),
+                ACCOUNT_SORTCODE               CHAR(6) NOT NULL,
+                ACCOUNT_NUMBER                 CHAR(8) NOT NULL,
+                ACCOUNT_TYPE                   CHAR(8),
+                ACCOUNT_INTEREST_RATE          DECIMAL(4, 2),
+                ACCOUNT_OPENED                 DATE,
+                ACCOUNT_OVERDRAFT_LIMIT        INTEGER,
+                ACCOUNT_LAST_STATEMENT         DATE,
+                ACCOUNT_NEXT_STATEMENT         DATE,
+                ACCOUNT_AVAILABLE_BALANCE      DECIMAL(10, 2),
+                ACCOUNT_ACTUAL_BALANCE         DECIMAL(10, 2) )
+           END-EXEC.
+
+## Source: copybooks/ACCOUNT.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+              03 ACCOUNT-DATA.
+                 05 ACCOUNT-EYE-CATCHER        PIC X(4).
+                 88 ACCOUNT-EYECATCHER-VALUE        VALUE 'ACCT'.
+                 05 ACCOUNT-CUST-NO            PIC 9(10).
+                 05 ACCOUNT-KEY.
+                    07 ACCOUNT-SORT-CODE       PIC 9(6).
+                    07 ACCOUNT-NUMBER          PIC 9(8).
+                 05 ACCOUNT-TYPE               PIC X(8).
+                 05 ACCOUNT-INTEREST-RATE      PIC 9(4)V99.
+                 05 ACCOUNT-OPENED             PIC 9(8).
+
+[...trimmed for token budget...]
+
+OUNT-NEXT-STMT-DATE     PIC 9(8).
+                 05 ACCOUNT-NEXT-STMT-GROUP
+                   REDEFINES ACCOUNT-NEXT-STMT-DATE.
+                    07 ACCOUNT-NEXT-STMT-DAY   PIC 99.
+                    07 ACCOUNT-NEXT-STMT-MONTH PIC 99.
+                    07 ACCOUNT-NEXT-STMT-YEAR  PIC 9999.
+                 05 ACCOUNT-AVAILABLE-BALANCE  PIC S9(10)V99.
+                 05 ACCOUNT-ACTUAL-BALANCE     PIC S9(10)V99.
+
+## Source: copybooks/CUSTOMER.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *
+      *                                                                *
+      ******************************************************************
+           03 CUSTOMER-RECORD.
+              05 CUSTOMER-EYECATCHER                 PIC X(4).
+                 88 CUSTOMER-EYECATCHER-VALUE        VALUE 'CUST'.
+              05 CUSTOMER-KEY.
+                 07 CUSTOMER-SORTCODE                PIC 9(6) DISPLAY.
+                 07 CUSTOMER-NUMBER                  PIC 9(10) DISPLAY.
+              05 CUSTOMER-NAME.
+                 07 CUSTOMER-TITLE                   PIC X(10).
+                 07 CUSTOMER-FIRST-NAME              PIC X(50).
+                 07 CUSTOMER-LAST-NAME               PIC X(50).
+              05 CUSTOMER-DOB.
+                 07 CU
+
+[...trimmed for token budget...]
+
+EATED-MONTH           PIC 99 DISPLAY.
+                 07 CUSTOMER-CREATED-YEAR            PIC 9999 DISPLAY.
+              05 CUSTOMER-CREDIT-SCORE               PIC 999.
+              05 CUSTOMER-CS-REVIEW-DATE.
+                 07 CUSTOMER-CS-REVIEW-DAY           PIC 99 DISPLAY.
+                 07 CUSTOMER-CS-REVIEW-MONTH         PIC 99 DISPLAY.
+                 07 CUSTOMER-CS-REVIEW-YEAR          PIC 9999 DISPLAY.
+
+## Source: copybooks/INQACCCU.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+          03 NUMBER-OF-ACCOUNTS        PIC S9(8) BINARY.
+          03 CUSTOMER-NUMBER           PIC 9(10).
+          03 COMM-SUCCESS              PIC X.
+          03 COMM-FAIL-CODE            PIC X.
+          03 CUSTOMER-FOUND            PIC X.
+          03 COMM-PCB-POINTER          POINTER.
+          03 ACCOUNT-DETAILS OCCURS 1 TO 20 DEPENDING ON
+              NUMBER-OF-ACCOUNTS.
+            05 COMM-EYE                  PIC X(4).
+            05 COMM-CUSTNO               PIC X(10).
+            05 COMM-SCODE                PIC X(6).
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: copybooks/INQACCCZ.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+          03 NUMBER-OF-ACCOUNTS        PIC S9(8) BINARY.
+          03 CUSTOMER-NUMBER           PIC 9(10).
+          03 COMM-SUCCESS              PIC X.
+          03 COMM-FAIL-CODE            PIC X.
+          03 CUSTOMER-FOUND            PIC X.
+          03 COMM-PCB-POINTER          PIC X(4).
+          03 ACCOUNT-DETAILS OCCURS 1 TO 20 DEPENDING ON
+              NUMBER-OF-ACCOUNTS.
+            05 COMM-EYE                  PIC X(4).
+            05 COMM-CUSTNO               PIC X(10).
+            05 COMM-SCODE                PIC X(6).
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: copybooks/INQCUSTZ.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      ******************************************************************
+          03 INQCUST-EYE                  PIC X(4).
+          03 INQCUST-SCODE                PIC X(6).
+          03 INQCUST-CUSTNO               PIC 9(10).
+          03 INQCUST-NAME.
+             05 INQCUST-TITLE             PIC X(10).
+             05 INQCUST-FIRST-NAME        PIC X(50).
+             05 INQCUST-LAST-NAME         PIC X(50).
+          03 INQCUST-DOB.
+             05 INQCUST-DOB-DD            PIC 99 DISPLAY.
+             05 INQCUST-DOB-MM            PIC 99 DISPLAY.
+             05 INQCUST-DOB-YYYY          PIC 9999 DISPLAY.
+          03 INQCUST-PHONE                PIC X(20).
+          03 INQCUST-A
+
+[...trimmed for token budget...]
+
+DISPLAY.
+          03 INQCUST-CREDIT-SCORE         PIC 999.
+          03 INQCUST-CS-REVIEW-DT.
+             05 INQCUST-CS-REVIEW-DD      PIC 99 DISPLAY.
+             05 INQCUST-CS-REVIEW-MM      PIC 99 DISPLAY.
+             05 INQCUST-CS-REVIEW-YYYY    PIC 9999 DISPLAY.
+          03 INQCUST-INQ-SUCCESS          PIC X.
+          03 INQCUST-INQ-FAIL-CD          PIC X.
+          03 INQCUST-PCB-POINTER          PIC X(4).
+
+## Source: copybooks/SORTCODE.cpy
+
+******************************************************************
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
+
+## Source: output/program-analysis.md
+
+# program-analysis.md
+
+Status: DRY RUN
+
+Agent: LegacyAnalysisAgent
+Purpose: Analyze COBOL programs and copybooks to produce modernization-ready program analysis.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacccu/output
+
+## Inputs Considered
+
+- cobol/INQACCCU.cbl
+- copybooks/ABNDINFO.cpy
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/CUSTOMER.cpy
+- copybooks/INQACCCU.cpy
+- copybooks/INQACCCZ.cpy
+- copybooks/INQCUSTZ.cpy
+- copybooks/SORTCODE.cpy
+
+## Prompt Template
+
+# Legacy Analysis Prompt
+
+Analyze the provided COBOL programs and copybooks.
+
+Produce:
+- Program inventory
+- Data structures and field map
+- Business process flow
+- Batch/online assumptions
+- Risks and unknowns
+
+Keep findings factual. Mark assumptions explicitly.
+
+
+## Input Previews
+
+## Source: cobol/INQACCCU.c
+
+[...trimmed for token budget...]
+
+****
+      *                                                                *
+      *  Copyright IBM Corp. 2023                                      *
+      *                                                                *
+      *                                                                *
+      ******************************************************************
+       77 SORTCODE           PIC 9(6) VALUE 987654.
 
-### BR002: Account Lookup and Retrieval Rule
-
-**ID:** BR002  
-**Statement:** Query the ACCOUNT database table using customer number to retrieve all associated accounts, limited to maximum 20 records.  
-**Trigger Condition:** CUSTOMER-FOUND = 'Y' and database connection established.  
-**Input:**
-- ACCOUNT_CUSTOMER_NUMBER (matched against input CUSTOMER-NUMBER)
-- ACCOUNT table from DB2
-
-**Output:**
-- ACCOUNT-DETAILS array populated with up to 20 account records
-- NUMBER-OF-ACCOUNTS = actual count of retrieved records
-
-**Error Condition:**
-- If database query fails, set COMM-FAIL-CODE and return empty account list.
-- If no accounts found for valid customer, return NUMBER-OF-ACCOUNTS = 0.
-
-**Modernization Notes:** Implement as service-layer method with mock repository for POC; preserve legacy query logic in adapter pattern.
-
----
-
-### BR003: Account Record Population Rule
-
-**ID:** BR003  
-**Statement:** For each matched account record, populate communication area fields by copying database columns to COBOL copybook structure.  
-**Trigger Condition:** Account row retrieved from ACCOUNT table.  
-**Input:**
-- ACCOUNT_EYECATCHER (CHAR(4))
-- ACCOUNT_SORTCODE (CHAR(6))
-- ACCOUNT_NUMBER (CHAR(8))
-- ACCOUNT_TYPE (CHAR(8))
-- ACCOUNT_INTEREST_RATE (DECIMAL(4, 2))
-- ACCOUNT_OPENED (DATE)
-- ACCOUNT_OVERDRAFT_LIMIT (INTEGER)
-- ACCOUNT_LAST_STATEMENT (DATE)
-- ACCOUNT_NEXT_STATEMENT (DATE)
-- ACCOUNT_AVAILABLE_BALANCE (DECIMAL(10, 2))
-- ACCOUNT_ACTUAL_BALANCE (DECIMAL(10, 2))
-
-**Output:**
-- COMM-EYE (PIC X(4)) ← ACCOUNT_EYECATCHER
-- COMM-SCODE (PIC X(6)) ← ACCOUNT_SORTCODE
-- COMM-ACCNO (PIC 9(8)) ← ACCOUNT_NUMBER
-- COMM-ACC-TYPE (PIC X(8)) ← ACCOUNT_TYPE
-- COMM-INT-RATE (PIC 9(4)V99) ← ACCOUNT_INTEREST_RATE
-- COMM-OPENED (PIC 9(8)) ← ACCOUNT_OPENED
-- COMM-OVERDRAFT (PIC 9(8)) ← ACCOUNT_OVERDRAFT_LIMIT
-- COMM-LAST-STMT-DT (PIC 9(8)) ← ACCOUNT_LAST_STATEMENT
-- COMM-NEXT-STMT-DT (PIC 9(8)) ← ACCOUNT_NEXT_STATEMENT
-- COMM-AVAIL-BAL (PIC S9(10)V99) ← ACCOUNT_AVAILABLE_BALANCE
-- COMM-ACTUAL-BAL (PIC S9(10)V99) ← ACCOUNT_ACTUAL_BALANCE
-
-**Error Condition:** If data type conversion fails (e.g., invalid date format), reject the account record and log error with COMM-FAIL-CODE.
-
-**Modernization Notes:** Implement as DTO mapping layer (ModelMapper or MapStruct) in Spring Boot; preserve field semantics and validation rules.
-
----
-
-### BR004: Account Eyecatcher Validation Rule
-
-**ID:** BR004  
-**Statement:** Validate that account record eyecatcher equals literal 'ACCT' to confirm record type integrity.  
-**Trigger Condition:** Account record retrieved from database.  
-**Input:**
-- ACCOUNT_EYECATCHER (CHAR(4))
-
-**Output:**
-- ACCOUNT-EYECATCHER-VALUE condition set ('ACCT')
-
-**Error Condition:** If eyecatcher ≠ 'ACCT', reject record as corrupted and set error flag.
-
-**Modernization Notes:** Implement as record validation in AccountEntity; use constraint annotations (@Pattern or custom validator).
-
----
-
-### BR005: Customer Found Status Rule
-
-**ID:** BR005  
-**Statement:** Set CUSTOMER-FOUND indicator based on whether at least one account record is retrieved for the input customer number.  
-**Trigger Condition:** Database query completed.  
-**Input:**
-- Query result set size
-
-**Output:**
-- CUSTOMER-FOUND = 'Y' if NUMBER-OF-ACCOUNTS > 0
-- CUSTOMER-FOUND = 'N' if NUMBER-OF-ACCOUNTS = 0
-
-**Error Condition:** If query execution fails, default CUSTOMER-FOUND = 'N'.
-
-**Modernization Notes:** Implement as conditional logic in service layer; expose as boolean field `customerFound` in REST response DTO.
-
----
-
-### BR006: Maximum Accounts Boundary Rule
-
-**ID:** BR006  
-**Statement:** Limit account details array to maximum 20 occurrences (ACCOUNT-DETAILS OCCURS 1 TO 20).  
-**Trigger Condition:** Account retrieval loop active.  
-**Input:**
-- Running count of processed account records
-
-**Output:**
-- NUMBER-OF-ACCOUNTS capped at 20
-- Excess records discarded (or logged as truncation warning)
-
-**Error Condition:** If NUMBER-OF-ACCOUNTS exceeds 20, truncate silently and optionally set warning flag in COMM-FAIL-CODE.
-
-**Modernization Notes:** Enforce in Spring Data pagination or custom repository; document truncation behavior in API response headers or metadata field.
-
----
-
-### BR007: Communication Area Success/Failure Flag Rule
-
-**ID:** BR007  
-**Statement:** Set COMM-SUCCESS and COMM-FAIL-CODE flags to indicate transaction completion status and error classification.  
-**Trigger Condition:** Program completion (normal or exceptional).  
-**Input:**
-- Transaction outcome (success / database error / validation error / etc.)
-
-**Output:**
-- COMM-SUCCESS (PIC X: 'Y' or 'N')
-- COMM-FAIL-CODE (PIC X: error classification code)
-
-**Error Condition:** 
-- Database connectivity failure → COMM-FAIL-CODE = 'D'
-- Invalid customer number → COMM-FAIL-CODE = 'I'
-- No customer found → COMM-FAIL-CODE = 'N'
-- Successful query → COMM-SUCCESS = 'Y', COMM-FAIL-CODE = SPACE
-
-**Modernization Notes:** Map to HTTP status codes (200, 400, 404, 500) in Spring Boot REST controller; include error code in standardized error response body (per security baseline).
-
----
-
-### BR008: Date/Time Population Rule
-
-**ID:** BR008  
-**Statement:** Populate current date and time in response working storage using CICS ASKTIME and FORMATTIME.  
-**Trigger Condition:** Program initialization (POPULATE-TIME-DATE section).  
-**Input:**
-- System time (CICS ASKTIME)
-
-**Output:**
-- WS-ORIG-DATE (DDMMYYYY format)
-- WS-TIME-NOW (HH:MM:SS format)
-
-**Error Condition:** If CICS time service unavailable, use system default or return null.
-
-**Modernization Notes:** Remove CICS dependency; use Java `java.time.LocalDateTime` or Spring Framework timing utilities. Include response timestamp in JSON body as ISO-8601 UTC format with correlation ID.
-
----
-
-### BR009: PCB Pointer Management Rule
-
-**ID:** BR009  
-**Statement:** Maintain DLI PCB (Program Communication Block) pointer for IMS/CICS integration (legacy artifact).  
-**Trigger Condition:** Program initialization and database access.  
-**Input:**
-- COMM-PCB-POINTER (PIC X(4))
-
-**Output:**
-- PCB pointer state maintained for IMS message handling
-
-**Error Condition:** If PCB initialization fails, transaction fails with error code 'P'.
-
-**Modernization Notes:** **REMOVE in modernization.** PCB pointers are IMS/CICS legacy constructs. Replace with Spring Data repository dependency injection. Document as "Legacy Artifact — Not Required" in modernization checklist.
-
----
-
-### BR010: Authorization and Role-Based Access Control Rule
-
-**ID:** BR010  
-**Statement:** Validate that authenticated user holds required role to access customer-account inquiry for a given customer.  
-**Trigger Condition:** Incoming REST request with OAuth2 JWT bearer token.  
-**Input:**
-- JWT bearer token
-- Customer ID path parameter
-- User roles from token claims
-
-**Output:**
-- Request authorized → proceed to service logic
-- Request denied → return HTTP 403 Forbidden with error message
-
-**Error Condition:** 
-- Missing bearer token → HTTP 401 Unauthorized
-- Invalid token signature → HTTP 401 Unauthorized
-- User role insufficient → HTTP 403 Forbidden
-- Customer ID mismatch with user's scope → HTTP 403 Forbidden
-
-**Modernization Notes:** Implement using Spring Security with `@PreAuthorize` annotations and OAuth2ResourceServerConfigurer; extract customer scope from JWT claim validation.
-
----
-
-### BR011: Input Validation Rule
-
-**ID:** BR011  
-**Statement:** Validate incoming customer number format and length before database query execution.  
-**Trigger Condition:** REST request received with customer ID parameter.  
-**Input:**
-- Customer ID string from path parameter
-
-**Output:**
-- Valid: proceed to query
-- Invalid: return HTTP 400 Bad Request with validation error details
-
-**Error Condition:**
-- Customer ID length ≠ 10 digits
-- Customer ID contains non-numeric characters
-- Customer ID is null or empty
-- Customer ID outside valid business range (e.g., all zeros)
-
-**Modernization Notes:** Implement using Spring Validation (@Pattern, @NotNull, custom validators); define in OpenAPI 3.0.3 schema; return standardized error response per security baseline.
-
----
-
-### BR012: Structured Logging and Correlation Rule
-
-**ID:** BR012  
-**Statement:** Log all inquiry transactions with structured JSON format, including correlation ID for traceability.  
-**Trigger Condition:** Request entry and exit points.  
-**Input:**
-- Request correlation ID (from HTTP header or generated)
-- Customer ID, user principal, outcome, latency, error details
-
-**Output:**
-- JSON log record written to application log stream
-
-**Example Log Entry:**
-```json
-{
-  "timestamp": "2024-01-15T14:32:50.123Z",
-  "correlationId": "req-12345-abcde",
-  "level": "INFO",
-  "message": "CustomerAccountInquiry completed",
-  "customerId": "1234567890",
-  "numberOfAccounts": 3,
-  "latencyMs": 145,
-  "principal": "user@example.com",
-  "status": "SUCCESS"
-}
-```
-
-**Error Condition:** 
-- Missing correlation ID → generate new UUID
-- Logging framework failure → fail-safe to stderr
-
-**Modernization Notes:** Implement using Spring Cloud Sleuth + SLF4J with Logback/Log4j2; configure JSON encoder (Logstash or similar); enable distributed tracing readiness with OpenTelemetry.
-
----
-
-### BR013: Metrics Collection Rule
-
-**ID:** BR013  
-**Statement:** Collect and expose operational metrics for customer inquiry endpoint.  
-**Trigger Condition:** Each request completion.  
-**Input:**
-- Request latency (ms)
-- HTTP status code
-- Error classification (if applicable)
-- Downstream adapter status (DB2 connection health)
-
-**Output:**
-- Micrometer metrics registered and exported
-
-**Metrics to Track:**
-- `inqacccu.inquiry.requests.total` (counter by status code)
-- `inqacccu.inquiry.latency.seconds` (histogram)
-- `inqacccu.inquiry.errors.total` (counter by error type)
-- `inqacccu.db.connection.health` (gauge: up/down)
-
-**Modernization Notes:** Implement using Spring Boot Actuator + Micrometer; export to Prometheus (or Datadog/Jaeger) per operational baseline.
-
----
-
-### BR014: Temporal Data Format Rule
-
-**ID:** BR014  
-**Statement:** All date fields must be converted from COBOL numeric format (YYYYMMDD or DDMMYYYY) to ISO-8601 UTC format (YYYY-MM-DDTHH:MM:SSZ) in REST response.  
-**Trigger Condition:** Account record population.  
-**Input:**
-- ACCOUNT_OPENED (DATE)
-- ACCOUNT_LAST_STATEMENT (DATE)
-- ACCOUNT_NEXT_STATEMENT (DATE)
-
-**Output:**
-- JSON response field: `accountOpened: "2023-01-15"`
-- JSON response field: `lastStatementDate: "2023-12-31T23:59:59Z"`
-
-**Error Condition:** If date value is null, invalid, or zero-date, return null in JSON or document as missing_date flag.
-
-**Modernization Notes:** Implement using Jackson `@JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss'Z'")` or custom serializer; validate date bounds (1900–2099 range for banking context).
-
----
-
-### BR015: Decimal Precision and Rounding Rule
-
-**ID:** BR015  
-**Statement:** All monetary amounts (balances, interest rates) must maintain 2 decimal places and use banker's rounding (HALF_EVEN) for calculation.  
-**Trigger Condition:** Account balance or interest rate population.  
-**Input:**
-- ACCOUNT_AVAILABLE_BALANCE (DECIMAL(10, 2))
-- ACCOUNT_ACTUAL_BALANCE (DECIMAL(10, 2))
-- ACCOUNT_INTEREST_RATE (DECIMAL(4, 2))
-
-**Output:**
-- JSON response field with 2 decimal places: `"availableBalance": "12345.67"`
-
-**Error Condition:** If precision loss detected during conversion, log warning and retain maximum available precision.
-
-**Modernization Notes:** Use Java `java.math.BigDecimal` with `RoundingMode.HALF_EVEN`; configure Jackson serializer to enforce 2-decimal JSON output; document rounding policy in API documentation.
-
----
-
-### BR016: Response Envelope and Versioning Rule
-
-**ID:** BR016  
-**Statement:** All REST responses must be wrapped in a standard envelope with API version, timestamp, and optional metadata.  
-**Trigger Condition:** Request completion (success or error).  
-**Input:**
-- Response payload (account details or error)
-- API version (from header or config)
-
-**Output:**
-```json
-{
-  "apiVersion": "v1",
-  "timestamp": "2024-01-15T14:32:50.123Z",
-  "correlationId": "req-12345-abcde",
-  "data": { ... },
-  "errors": null
-}
-```
-
-**Error Condition:**
-- On error, `data: null`, `errors: [{ code: "...", message: "..." }]`
-
-**Modernization Notes:** Implement as Spring @ControllerAdvice with custom response wrapper; configure in OpenAPI 3.0.3 schema definition.
-
----
-
-### BR017: Secret and Configuration Management Rule
-
-**ID:** BR017  
-**Statement:** Database credentials, OAuth2 secrets, and API keys must be externalized from source code and managed via environment variables or secret manager.  
-**Trigger Condition:** Application bootstrap.  
-**Input:**
-- Environment variables (e.g., DB_HOST, DB_PORT, OAUTH2_CLIENT_SECRET)
-- Secret manager (e.g., AWS Secrets Manager, HashiCorp Vault)
-
-**Output:**
-- Credentials injected into Spring context without source exposure
-
-**Error Condition:** 
-- Missing required secret → application startup fails with clear error
-- Invalid secret format → validation failure during initialization
-
-**Modernization Notes:** Use Spring Cloud Config + `@Value` or Spring Cloud Vault; document required environment variables in deployment runbook; never commit secrets.
