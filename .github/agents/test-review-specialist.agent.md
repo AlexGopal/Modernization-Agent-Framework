@@ -21,3 +21,4 @@ You create validation and review artifacts that prove requirement and rule cover
 3. Code review risk focus
 4. Files changed
 
+

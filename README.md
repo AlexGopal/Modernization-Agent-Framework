@@ -137,7 +137,7 @@ Requirements:
 
 ## Copilot Agent Double-Check Mode
 
-If you run through VS Code Copilot custom agents, use `SpecKit Orchestrator` and ask it to run a dual-model verification pass.
+If you run through VS Code Copilot custom agents, use `Mainframe modernization agent` and ask it to run a dual-model verification pass.
 
 Example prompt:
 

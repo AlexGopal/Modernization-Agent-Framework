@@ -1,4 +1,4 @@
----
+﻿---
 description: "Use when running a two-model verification pass that compares and merges outputs into a reconciled artifact set with analysis evidence. Trigger phrases: dual model verification, compare models, merge outputs, double check artifacts."
 name: "Dual Model Merge Specialist"
 tools: [read, search, execute]

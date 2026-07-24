@@ -22,3 +22,4 @@ You run quality gates and return deterministic pass/fail evidence.
 3. Top issues with impacted artifacts
 4. Release readiness verdict
 
+

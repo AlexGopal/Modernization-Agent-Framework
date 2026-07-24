@@ -54,13 +54,13 @@ Run project quality gates and return:
 - blockers
 ```
 
-Manual-gated variant (separate agent calls):
+Manual-gated variant (orchestrator phase gates):
 
-1. Select `Spec Implementation Specialist` and implement only `<TASK_SCOPE>`.
+1. Select `Mainframe modernization agent` and request implementation for `<TASK_SCOPE>` only.
 2. Manually review code and approve or request fixes.
-3. Select `Secure Code Review Specialist` and generate bad-practice and vulnerability findings.
+3. In a follow-up prompt, request secure review phase only and generate bad-practice/vulnerability findings.
 4. Manually review findings and complete remediations.
-5. Select `Test Automation Specialist` and generate manual tests plus API and Playwright UI automation.
+5. In a follow-up prompt, request test automation phase only for manual, API, and Playwright UI tests.
 6. Manually review generated tests, then run quality gates.
 
 Starter prompt (Spec Kit flow):
@@ -77,7 +77,7 @@ Return: bundle applied summary, files changed, implemented task IDs, review resu
 
 If `Agent` mode is not available, update VS Code and GitHub Copilot extensions, then sign in again.
 
-If `SpecKit Orchestrator` is missing after a `git pull`, run `Developer: Reload Window` so VS Code reloads workspace agent definitions.
+If `Mainframe modernization agent` is missing after a `git pull`, run `Developer: Reload Window` so VS Code reloads workspace agent definitions.
 
 ## 0.1) Day-1 5-Minute Checklist
 

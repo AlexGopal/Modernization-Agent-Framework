@@ -6,7 +6,7 @@ This document is the single entry point for Copilot custom agents and workflow i
 
 Use this guide to:
 - Understand which agents are available and how they are intended to be used.
-- Run implementation, secure review, and test automation in a manual-gated sequence.
+- Run implementation, secure review, and test automation in an orchestrator-gated sequence.
 - Run optional dual-model verification and merge for higher confidence.
 
 ## Source Documents
@@ -17,11 +17,8 @@ Detailed references:
 
 ## Agent Visibility Model
 
-Picker-visible (manual execution):
-- SpecKit Orchestrator
-- Spec Implementation Specialist
-- Secure Code Review Specialist
-- Test Automation Specialist
+Picker-visible:
+- Mainframe modernization agent
 
 Delegated/internal (not picker-visible):
 - Legacy Analysis Specialist
@@ -41,15 +38,13 @@ Attach these artifacts before implementation or test generation:
 - `.agentic-sdlc/examples/inqacc/output/test-spec.md`
 - `.agentic-sdlc/examples/inqacc/output/openapi.yaml`
 
-## Recommended Manual-Gated Workflow
+## Recommended Orchestrator-Gated Workflow
 
-1. Run Spec Implementation Specialist for a small task slice.
-2. Manually review code changes and traceability.
-3. Run Secure Code Review Specialist for bad practices and vulnerabilities.
-4. Manually review findings and complete remediations.
-5. Run Test Automation Specialist to generate manual tests plus API and Playwright UI tests.
-6. Manually review test assets.
-7. Run quality gates and summarize residual risks.
+1. Run Mainframe modernization agent for a small task slice.
+2. Ask it to pause after implementation summary for manual verification.
+3. Resume only secure review phase and review findings manually.
+4. Resume only test automation phase and review generated assets manually.
+5. Run quality gates and summarize residual risks.
 
 ## Prompt Templates
 

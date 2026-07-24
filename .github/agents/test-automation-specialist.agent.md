@@ -1,8 +1,8 @@
----
+﻿---
 description: "Use when creating manual test cases plus UI and API automation, including Playwright coverage, from spec and traceability artifacts. Trigger phrases: create tests, playwright tests, api automation, manual qa tests."
 name: "Test Automation Specialist"
 tools: [read, search, edit, execute]
-user-invocable: true
+user-invocable: false
 ---
 You generate test assets from specification artifacts with explicit requirement coverage.
 
