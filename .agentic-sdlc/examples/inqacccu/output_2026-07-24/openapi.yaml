@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: INQACCCU Account Inquiry API
+  version: 1.0.0
+  description: Modernized account inquiry contract preserving INQACCCU observable behavior.
+servers:
+  - url: /api
+paths:
+  /customers/{customerId}/accounts:
+    get:
+      operationId: getCustomerAccounts
+      summary: Get accounts for a customer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: 10-digit customer number
+          schema:
+            type: string
+            pattern: "^[0-9]{10}$"
+      responses:
+        '200':
+          description: Account inquiry completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerAccountsResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Customer not found or invalid sentinel value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal processing failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    CustomerAccountsResponse:
+      type: object
+      required:
+        - accounts
+      properties:
+        accounts:
+          type: array
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/AccountSummary'
+        totalCount:
+          type: integer
+          minimum: 0
+          maximum: 20
+    AccountSummary:
+      type: object
+      required:
+        - accountId
+        - accountType
+        - currency
+        - status
+      properties:
+        accountId:
+          type: string
+        accountType:
+          type: string
+        currency:
+          type: string
+          enum: [GBP]
+        accountNumber:
+          type: string
+        sortCode:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE]
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Legacy-equivalent semantic code (1,2,3,4 or HTTP-classified code)
+        message:
+          type: string
