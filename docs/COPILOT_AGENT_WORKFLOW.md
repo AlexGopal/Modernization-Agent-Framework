@@ -40,6 +40,29 @@ Use primary model plus Claude, compare outputs, merge results, and include dual-
 Return: model pair used, merge rationale, artifacts selected from each model, and any follow-up risks.
 ```
 
+Starter prompt (implementation + secure review + test automation flow):
+
+```text
+Implement <TASK_SCOPE> only using spec.md, tasks.md, test-spec.md, and openapi.yaml.
+Then run a secure code review for bad practices and vulnerabilities and produce a findings report.
+Then create manual test cases plus API automation and Playwright UI automation tests from the same artifacts.
+Run project quality gates and return:
+- implemented task IDs
+- files changed
+- security findings by severity
+- manual/API/UI coverage summary and gaps
+- blockers
+```
+
+Manual-gated variant (separate agent calls):
+
+1. Select `Spec Implementation Specialist` and implement only `<TASK_SCOPE>`.
+2. Manually review code and approve or request fixes.
+3. Select `Secure Code Review Specialist` and generate bad-practice and vulnerability findings.
+4. Manually review findings and complete remediations.
+5. Select `Test Automation Specialist` and generate manual tests plus API and Playwright UI automation.
+6. Manually review generated tests, then run quality gates.
+
 Starter prompt (Spec Kit flow):
 
 ```text
