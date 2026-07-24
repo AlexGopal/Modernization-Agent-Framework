@@ -61,3 +61,15 @@ Defines each framework agent role and when to use it.
 14. ReportAgent
 - Use at iteration close or milestone review.
 - Produces modernization-report.md.
+
+15. SpecImplementationAgent
+- Use when implementing scoped tasks directly from authoritative artifacts.
+- Produces code changes and task traceability summary.
+
+16. SecureCodeReviewAgent
+- Use after implementation to review bad practices and vulnerabilities.
+- Produces security and code-quality findings report.
+
+17. TestAutomationAgent
+- Use after implementation to create manual tests plus API/UI automation from spec artifacts.
+- Produces manual test cases and automation test assets (including Playwright UI tests).

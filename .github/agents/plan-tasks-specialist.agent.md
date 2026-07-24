@@ -21,3 +21,4 @@ You translate specification artifacts into implementable delivery slices.
 3. Critical path and risks
 4. Files changed
 
+

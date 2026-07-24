@@ -32,6 +32,37 @@ Add/adjust tests for acceptance criteria.
 Return a traceability summary: task IDs implemented, files changed, tests updated, blockers.
 ```
 
+Starter prompt (double-check flow):
+
+```text
+Generate artifacts for the requested scope, then run dual-model verification.
+Use primary model plus Claude, compare outputs, merge results, and include dual-model-analysis.md summary.
+Return: model pair used, merge rationale, artifacts selected from each model, and any follow-up risks.
+```
+
+Starter prompt (implementation + secure review + test automation flow):
+
+```text
+Implement <TASK_SCOPE> only using spec.md, tasks.md, test-spec.md, and openapi.yaml.
+Then run a secure code review for bad practices and vulnerabilities and produce a findings report.
+Then create manual test cases plus API automation and Playwright UI automation tests from the same artifacts.
+Run project quality gates and return:
+- implemented task IDs
+- files changed
+- security findings by severity
+- manual/API/UI coverage summary and gaps
+- blockers
+```
+
+Manual-gated variant (orchestrator phase gates):
+
+1. Select `Mainframe modernization agent` and request implementation for `<TASK_SCOPE>` only.
+2. Manually review code and approve or request fixes.
+3. In a follow-up prompt, request secure review phase only and generate bad-practice/vulnerability findings.
+4. Manually review findings and complete remediations.
+5. In a follow-up prompt, request test automation phase only for manual, API, and Playwright UI tests.
+6. Manually review generated tests, then run quality gates.
+
 Starter prompt (Spec Kit flow):
 
 ```text
@@ -46,7 +77,7 @@ Return: bundle applied summary, files changed, implemented task IDs, review resu
 
 If `Agent` mode is not available, update VS Code and GitHub Copilot extensions, then sign in again.
 
-If `SpecKit Orchestrator` is missing after a `git pull`, run `Developer: Reload Window` so VS Code reloads workspace agent definitions.
+If `Mainframe modernization agent` is missing after a `git pull`, run `Developer: Reload Window` so VS Code reloads workspace agent definitions.
 
 ## 0.1) Day-1 5-Minute Checklist
 

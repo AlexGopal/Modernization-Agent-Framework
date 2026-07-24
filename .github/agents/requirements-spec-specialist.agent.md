@@ -22,3 +22,4 @@ You create requirements and specification artifacts ready for implementation.
 3. Open assumption list
 4. Files changed
 
+
