@@ -46,6 +46,8 @@ Return: bundle applied summary, files changed, implemented task IDs, review resu
 
 If `Agent` mode is not available, update VS Code and GitHub Copilot extensions, then sign in again.
 
+If `SpecKit Orchestrator` is missing after a `git pull`, run `Developer: Reload Window` so VS Code reloads workspace agent definitions.
+
 ## 0.1) Day-1 5-Minute Checklist
 
 Use this exact sequence for a first successful run.

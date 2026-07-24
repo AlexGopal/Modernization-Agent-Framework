@@ -1,4 +1,4 @@
----
+﻿---
 description: "Use when producing requirements and spec artifacts from business rules with explicit FR/NFR/AC IDs and non-goals. Trigger phrases: requirements drafting, spec drafting, acceptance criteria mapping."
 name: "Requirements and Spec Specialist"
 tools: [read, search, edit]
@@ -21,3 +21,4 @@ You create requirements and specification artifacts ready for implementation.
 2. AC coverage summary
 3. Open assumption list
 4. Files changed
+

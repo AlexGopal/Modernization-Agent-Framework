@@ -1,4 +1,4 @@
----
+﻿---
 description: "Use when generating technical plan and implementation tasks with dependencies and DoD aligned to requirements/spec. Trigger phrases: implementation plan, task breakdown, delivery slices, task dependencies."
 name: "Plan and Tasks Specialist"
 tools: [read, search, edit]
@@ -20,3 +20,4 @@ You translate specification artifacts into implementable delivery slices.
 2. Task linkage coverage summary
 3. Critical path and risks
 4. Files changed
+

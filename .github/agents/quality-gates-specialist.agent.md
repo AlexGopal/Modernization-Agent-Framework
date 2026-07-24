@@ -1,4 +1,4 @@
----
+﻿---
 description: "Use when running artifact quality gates and readiness checks: tests, review command, detail drift validation, and baseline alignment validation. Trigger phrases: quality gates, readiness validation, drift check, alignment check."
 name: "Quality Gates Specialist"
 tools: [read, search, execute]
@@ -21,3 +21,4 @@ You run quality gates and return deterministic pass/fail evidence.
 2. Pass/fail by gate
 3. Top issues with impacted artifacts
 4. Release readiness verdict
+

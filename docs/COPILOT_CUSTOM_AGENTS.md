@@ -39,4 +39,5 @@ Use these in `Quality Gates Specialist` when needed:
 ## Notes
 
 - Specialist agents are `user-invocable: false` and designed for orchestrated delegation.
-- If you prefer direct selection of specialists, set `user-invocable: true` in each agent file.
+- `SpecKit Orchestrator` is the only picker-visible entry point by default.
+- After pulling new agent definitions, run VS Code `Developer: Reload Window` if the picker does not update immediately.

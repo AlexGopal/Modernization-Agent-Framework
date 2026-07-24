@@ -1,4 +1,4 @@
----
+﻿---
 description: "Use when analyzing COBOL, copybooks, DB2, CICS, JCL, IMS, MQ, and extracting evidence-first program behavior. Trigger phrases: program analysis, legacy dependencies, commarea, sqlcode, control flow."
 name: "Legacy Analysis Specialist"
 tools: [read, search, edit]
@@ -20,3 +20,4 @@ You generate legacy analysis artifacts from source evidence only.
 2. Dependency summary
 3. Ambiguities and SME validation list
 4. Files changed
+

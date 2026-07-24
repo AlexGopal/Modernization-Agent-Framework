@@ -1,4 +1,4 @@
----
+﻿---
 description: "Use when creating test-spec, QA checklist, and code review checklist from spec and business rules. Trigger phrases: test specification, qa checklist, code review checklist, coverage gaps."
 name: "Test and Review Specialist"
 tools: [read, search, edit]
@@ -20,3 +20,4 @@ You create validation and review artifacts that prove requirement and rule cover
 2. QA checklist risk focus
 3. Code review risk focus
 4. Files changed
+

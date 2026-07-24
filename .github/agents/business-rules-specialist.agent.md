@@ -1,4 +1,4 @@
----
+﻿---
 description: "Use when extracting and normalizing business rules with IDs and source evidence. Trigger phrases: business rules, BR mapping, rule extraction, rule priority and risk."
 name: "Business Rules Specialist"
 tools: [read, search, edit]
@@ -20,3 +20,4 @@ You produce business rule artifacts with strict evidence traceability.
 2. New or updated BR IDs
 3. Risk hotspots
 4. Files changed
+
