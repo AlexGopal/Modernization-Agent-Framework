@@ -32,6 +32,14 @@ Add/adjust tests for acceptance criteria.
 Return a traceability summary: task IDs implemented, files changed, tests updated, blockers.
 ```
 
+Starter prompt (double-check flow):
+
+```text
+Generate artifacts for the requested scope, then run dual-model verification.
+Use primary model plus Claude, compare outputs, merge results, and include dual-model-analysis.md summary.
+Return: model pair used, merge rationale, artifacts selected from each model, and any follow-up risks.
+```
+
 Starter prompt (Spec Kit flow):
 
 ```text

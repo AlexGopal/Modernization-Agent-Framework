@@ -29,6 +29,16 @@ Run quality gates and return readiness summary.
 
 The orchestrator delegates internally to specialist agents.
 
+For double-check mode, ask the orchestrator to run dual-model verification so outputs are compared and merged.
+
+Example request:
+
+```text
+Generate modernization artifacts for INQACC account inquiry.
+Then run dual-model verification using primary model plus Claude,
+compare outputs, merge final artifacts, and summarize differences from dual-model-analysis.md.
+```
+
 ## Quality Gate Commands
 
 Use these in `Quality Gates Specialist` when needed:
@@ -41,3 +51,4 @@ Use these in `Quality Gates Specialist` when needed:
 - Specialist agents are `user-invocable: false` and designed for orchestrated delegation.
 - `SpecKit Orchestrator` is the only picker-visible entry point by default.
 - After pulling new agent definitions, run VS Code `Developer: Reload Window` if the picker does not update immediately.
+- Dual-model compare and merge is delegated internally through `Dual Model Merge Specialist` when you request double-check mode.

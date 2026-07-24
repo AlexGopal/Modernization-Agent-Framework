@@ -135,6 +135,24 @@ Requirements:
 - Claude key is required when `--compare-with-claude` is enabled.
 - Missing key validation fails fast with a clear error message.
 
+## Copilot Agent Double-Check Mode
+
+If you run through VS Code Copilot custom agents, use `SpecKit Orchestrator` and ask it to run a dual-model verification pass.
+
+Example prompt:
+
+```text
+Generate modernization artifacts for INQACC account inquiry.
+Then run dual-model verification using primary model plus Claude,
+compare outputs, merge final artifacts, and summarize differences from dual-model-analysis.md.
+```
+
+What you get:
+
+- Standard artifact generation via orchestrated specialists
+- Dual-model compare + merge reconciliation
+- Evidence summary from `dual-model-analysis.md`
+
 Parallel control:
 
 - `--parallel-dual-run` (default on) runs primary and Claude phases concurrently.
