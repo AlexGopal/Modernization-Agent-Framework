@@ -17,3 +17,8 @@ Minimum detail expectations:
 - Each functional requirement references at least one source rule or legacy behavior.
 - Include explicit security, observability, and environment requirements.
 - Separate preserved legacy behavior from modernization enhancements.
+
+Traceability hard requirements:
+- Every `BR-xxx` ID found in `business-rules.md` must be referenced at least once in this artifact.
+- If a business rule is not represented by an `FR-xxx`, add a dedicated acceptance criterion that references the missing `BR-xxx` ID.
+- Include a final section named `Traceability Addendum` listing each `BR-xxx` and where it is realized.

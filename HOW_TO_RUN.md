@@ -266,6 +266,32 @@ UI run behavior:
 python -m pytest -q tests
 ```
 
+## 11.1 Unified Quality Gates (CI-Parity Local Check)
+
+Run this as the primary local readiness check:
+
+```powershell
+python scripts/run_quality_gates.py --repo-root .
+```
+
+Gate stages:
+
+1. `tests`
+2. `agent-reporting-contract`
+3. `bundle-preflight`
+4. `detail-drift`
+
+Bundle preflight behavior:
+
+- If `.agentic-sdlc/spec-kit-bundles/current/specs` is missing, the gate runner auto-builds the baseline with `scripts/build_spec_bundle.py`.
+
+Detail drift behavior:
+
+- Runs structural and semantic checks.
+- Runs cross-artifact consistency checks across BR/FR/AC/TASK references.
+- Writes report to `<generated-output>/detail-drift-report.md`.
+- Dry-run OpenAPI marker mismatches are warning-class findings (non-blocking for deterministic scaffold output).
+
 ## 12. Validate Detail Drift Against Spec Kit Baseline
 
 Use this after implementation to catch artifacts that are too thin or too verbose compared to your Spec Kit source of truth.
@@ -283,6 +309,26 @@ python scripts/validate_detail_drift.py --generated-output .agentic-sdlc/example
 ```
 
 The command writes `detail-drift-report.md` in the generated output folder and exits non-zero on failure.
+
+## 12.1 Validate AI Artifacts (Optional CI Lane Reproduction)
+
+Use this to reproduce the optional GitHub Actions AI artifact validation lane locally.
+
+Generate AI artifacts:
+
+```powershell
+python run_pipeline.py --pipeline mainframe_modernization --input .agentic-sdlc/examples/inqacc/legacy --output .agentic-sdlc/examples/inqacc/output_ai_ci --use-ai --ai-provider openai --ai-model gpt-4o-mini --ai-base-url https://api.openai.com
+```
+
+Validate generated AI artifacts with CI-aligned relaxed thresholds:
+
+```powershell
+python scripts/validate_detail_drift.py --generated-output .agentic-sdlc/examples/inqacc/output_ai_ci --bundle-specs .agentic-sdlc/spec-kit-bundles/current/specs --min-char-ratio 0.20 --max-char-ratio 5.00 --min-heading-ratio 0.20 --max-heading-ratio 5.00 --min-id-ratio 0.20 --max-id-ratio 5.00
+```
+
+Expected CI gate condition:
+
+- GitHub Actions runs this lane only when `AGENTIC_AI_API_KEY` is configured as a repository secret.
 
 ## 13. Fast Troubleshooting
 

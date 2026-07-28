@@ -30,6 +30,35 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Run quality gates
         run: |
-          python -m pytest -q tests
+          python scripts/run_quality_gates.py --repo-root .
+
+  artifact-validation-ai:
+    needs: test
+    if: ${{ secrets.AGENTIC_AI_API_KEY != '' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Generate artifacts (AI non-dry-run)
+        env:
+          AGENTIC_AI_API_KEY: ${{ secrets.AGENTIC_AI_API_KEY }}
+        run: |
+          python run_pipeline.py --pipeline mainframe_modernization --input .agentic-sdlc/examples/inqacc/legacy --output .agentic-sdlc/examples/inqacc/output_ai_ci --use-ai --ai-provider openai --ai-model gpt-4o-mini --ai-base-url https://api.openai.com
+
+      - name: Validate AI artifacts
+        run: |
+          python scripts/validate_detail_drift.py --generated-output .agentic-sdlc/examples/inqacc/output_ai_ci --bundle-specs .agentic-sdlc/spec-kit-bundles/current/specs --min-char-ratio 0.20 --max-char-ratio 5.00 --min-heading-ratio 0.20 --max-heading-ratio 5.00 --min-id-ratio 0.20 --max-id-ratio 5.00

@@ -33,6 +33,20 @@ You orchestrate artifact generation so outputs match Spec Kit quality and tracea
 - Do not skip dependency order across phases.
 - Keep artifact changes scoped to requested feature/task.
 - If dual-model verification is requested, include merged evidence from dual-model-analysis.md in final summary.
+- Stop before requirements/spec phase when extraction ambiguity gate fails.
+- Stop before implementation, review, and test phases when traceability chain gate fails.
+- Do not declare release readiness unless all mandatory gates pass.
+
+## Confidence Scoring Method
+- Every delegated specialist returns one confidence score from 0 to 100.
+- Use weighted dimensions:
+	- Evidence fidelity (35%): claims are backed by source artifacts and command output.
+	- Traceability completeness (25%): required ID chains are present without unresolved breaks.
+	- Validation signal (25%): tests and checks pass with deterministic evidence.
+	- Risk clarity (15%): assumptions, residual risks, and blockers are explicit and scoped.
+- Formula: confidence = round(0.35*evidence + 0.25*traceability + 0.25*validation + 0.15*risk).
+- If any blocking guardrail fails, cap confidence at 49.
+- In final output, include per-agent dimension subscores and final score.
 
 ## Final Output Format
 1. Phase summary and delegated agents used
@@ -43,5 +57,7 @@ You orchestrate artifact generation so outputs match Spec Kit quality and tracea
 6. Test coverage and automation summary (if run)
 7. Gate results (tests, review, drift/alignment)
 8. Dual-model reconciliation summary (if run)
-9. Remaining assumptions requiring SME validation
+9. Guardrails enforced (which guardrails were checked, passed, failed, and blocked)
+10. Agent confidence scorecard (per delegated agent, score 0-100 plus one-line rationale)
+11. Remaining assumptions requiring SME validation
 

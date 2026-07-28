@@ -27,4 +27,9 @@ Quality constraints:
 - No invented fields outside copybooks/requirements/spec artifacts.
 - Identify modernization enhancements explicitly.
 
+Traceability hard requirements:
+- Realize and explicitly reference every `BR-xxx` ID from `business-rules.md` in this artifact.
+- If any business rule does not map to an existing section, add a concise subsection under `Business rule realization` for that `BR-xxx`.
+- Include a final section named `Traceability Addendum` listing each `BR-xxx` and where it is realized.
+
 Spec must be the source of truth for implementation.

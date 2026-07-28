@@ -118,7 +118,9 @@ top issues, and release-readiness verdict.
 
 Use these in `Quality Gates Specialist` when needed:
 
+- `python scripts/run_quality_gates.py --repo-root .`
 - `python -m pytest -q tests`
+- `python scripts/validate_agent_reporting_contract.py --repo-root .`
 - `python scripts/validate_detail_drift.py --generated-output .agentic-sdlc/examples/inqacc/output --bundle-specs .agentic-sdlc/spec-kit-bundles/current/specs`
 
 ## Notes

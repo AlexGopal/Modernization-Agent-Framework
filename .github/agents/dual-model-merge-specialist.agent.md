@@ -26,4 +26,20 @@ You run dual-model verification for modernization artifacts and return determini
 2. Model pair used and run mode
 3. Merge output locations
 4. Key differences and merge rationale summary
-5. Risks and follow-up validation steps
+5. Guardrails enforced
+6. Confidence score (0-100) with rationale
+7. Risks and follow-up validation steps
+
+## Confidence Output Template
+Use this exact structure in the response:
+
+```text
+Confidence Score: <0-100>
+Confidence Rationale: <one line>
+Confidence Dimensions:
+- Evidence fidelity (35%): <0-100>
+- Traceability completeness (25%): <0-100>
+- Validation signal (25%): <0-100>
+- Risk clarity (15%): <0-100>
+Guardrail Cap Applied: <yes|no>
+```

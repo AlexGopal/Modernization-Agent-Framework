@@ -120,7 +120,7 @@ flowchart TD
 
 ### 6. Copilot Custom Agent Layer (VS Code)
 
-- .github/agents/speckit-orchestrator.agent.md
+- .github/agents/mainframe-modernization.agent.md
   - Picker-visible orchestrator: Mainframe modernization agent
   - Delegates workflow phases to specialist custom agents.
 - .github/agents/*.agent.md

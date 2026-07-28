@@ -74,6 +74,44 @@ AI run with OpenAI-compatible provider:
 python run_pipeline.py --pipeline mainframe_modernization --input .agentic-sdlc/examples/inqacc/legacy --output .agentic-sdlc/examples/inqacc/output --use-ai --ai-provider openai --ai-model gpt-4o-mini --ai-base-url https://api.openai.com
 ```
 
+## Quality Gates and CI
+
+Run one command locally for CI parity:
+
+```powershell
+python scripts/run_quality_gates.py --repo-root .
+```
+
+Current gate sequence:
+
+1. `tests` via `pytest -q tests`
+2. `agent-reporting-contract` via `scripts/validate_agent_reporting_contract.py`
+3. `bundle-preflight` for `.agentic-sdlc/spec-kit-bundles/current/specs`
+4. `detail-drift` via `scripts/validate_detail_drift.py`
+
+Bundle preflight behavior:
+
+- If baseline bundle specs are missing, gate runner auto-bootstraps them using `scripts/build_spec_bundle.py`.
+
+Detail drift behavior:
+
+- Structural ratio checks and semantic checks run for generated artifacts.
+- Cross-artifact consistency checks validate BR/FR/AC/TASK linkage.
+- Dry-run OpenAPI marker gaps are classified as warnings (non-blocking in deterministic scaffold output).
+- Report output path: `.agentic-sdlc/examples/inqacc/output/detail-drift-report.md`
+
+CI workflow behavior:
+
+- Main `test` job runs the unified quality gate command for Python 3.11 and 3.12.
+- Optional `artifact-validation-ai` job runs only when `AGENTIC_AI_API_KEY` is set in GitHub secrets.
+- Optional job generates non-dry-run artifacts in `.agentic-sdlc/examples/inqacc/output_ai_ci` and runs detail drift validation with relaxed structural thresholds for AI variability.
+
+AI CI validation command (as used in workflow):
+
+```powershell
+python scripts/validate_detail_drift.py --generated-output .agentic-sdlc/examples/inqacc/output_ai_ci --bundle-specs .agentic-sdlc/spec-kit-bundles/current/specs --min-char-ratio 0.20 --max-char-ratio 5.00 --min-heading-ratio 0.20 --max-heading-ratio 5.00 --min-id-ratio 0.20 --max-id-ratio 5.00
+```
+
 ## Easy Run (Dashboard)
 
 Use one command to launch both backend and UI in separate PowerShell windows:

@@ -208,7 +208,12 @@ Recommended flow:
 Run:
 
 - test:python:all
-- python scripts/validate_detail_drift.py --generated-output .agentic-sdlc/examples/inqacc/output --bundle-specs <SPEC_KIT_IMPORT_PATH>/specs
+- python scripts/run_quality_gates.py --repo-root .
+
+Optional AI lane parity check (matches secret-gated CI job intent):
+
+- python run_pipeline.py --pipeline mainframe_modernization --input .agentic-sdlc/examples/inqacc/legacy --output .agentic-sdlc/examples/inqacc/output_ai_ci --use-ai --ai-provider openai --ai-model gpt-4o-mini --ai-base-url https://api.openai.com
+- python scripts/validate_detail_drift.py --generated-output .agentic-sdlc/examples/inqacc/output_ai_ci --bundle-specs .agentic-sdlc/spec-kit-bundles/current/specs --min-char-ratio 0.20 --max-char-ratio 5.00 --min-heading-ratio 0.20 --max-heading-ratio 5.00 --min-id-ratio 0.20 --max-id-ratio 5.00
 
 If failures occur, use:
 

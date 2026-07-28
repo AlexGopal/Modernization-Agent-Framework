@@ -46,6 +46,92 @@ This guide now reflects the full current custom-agent set under `.github/agents/
 - Quality Gates Specialist: runs tests, review, drift checks, and readiness verdict.
 - Dual Model Merge Specialist: runs compare/merge pass and summarizes reconciliation evidence.
 
+## Reporting Contract
+
+All custom agents now include two mandatory report elements in their output format:
+- Guardrails enforced: checks performed, pass/fail status, and any blocking guardrail.
+- Confidence score: 0 to 100, plus one-line rationale grounded in evidence.
+
+For orchestrated runs, `Mainframe modernization agent` must return an agent confidence scorecard summarizing confidence per delegated specialist.
+
+## Confidence Rubric (v1)
+
+Use the same weighted rubric for every agent so confidence is comparable across phases:
+
+| Dimension | Weight | Scoring intent |
+|---|---:|---|
+| Evidence fidelity | 35% | Are claims backed by artifacts, code, and command output? |
+| Traceability completeness | 25% | Are BR/FR/AC/TASK/TC/API links present and consistent? |
+| Validation signal | 25% | Did relevant tests/checks pass with deterministic evidence? |
+| Risk clarity | 15% | Are assumptions, blockers, and residual risks explicit? |
+
+Formula:
+- `confidence = round(0.35*evidence + 0.25*traceability + 0.25*validation + 0.15*risk)`
+
+Guardrail rule:
+- If any blocking guardrail fails, cap confidence at `49`.
+
+Recommended score bands:
+- `90-100`: High confidence, no blocking guardrails, strong validation signal.
+- `70-89`: Good confidence, minor non-blocking gaps or warnings.
+- `50-69`: Moderate confidence, meaningful validation or traceability gaps.
+- `0-49`: Low confidence, blocking guardrail failed or evidence is insufficient.
+
+## Sample Orchestrator Output
+
+Use this shape for `Mainframe modernization agent` final summaries:
+
+```text
+Phase summary and delegated agents used:
+- Legacy Analysis Specialist
+- Business Rules Specialist
+- Requirements and Spec Specialist
+- Contract and Mapping Specialist
+- Plan and Tasks Specialist
+- Spec Implementation Specialist
+- Secure Code Review Specialist
+- Test and Review Specialist
+- Test Automation Specialist
+- Quality Gates Specialist
+
+Guardrails enforced:
+- No invented fields: PASS
+- Dependency order preserved: PASS
+- Scope bounded to requested TASK IDs: PASS
+- Traceability chain complete (BR->FR->AC->TASK->TC->API): PASS
+- Blocking review findings (critical/high): NONE
+- Release readiness gate: PASS
+
+Agent confidence scorecard:
+- Legacy Analysis Specialist: 92
+	- Evidence fidelity: 95
+	- Traceability completeness: 90
+	- Validation signal: 90
+	- Risk clarity: 92
+	- Guardrail cap applied: no
+- Business Rules Specialist: 89
+	- Evidence fidelity: 91
+	- Traceability completeness: 88
+	- Validation signal: 87
+	- Risk clarity: 90
+	- Guardrail cap applied: no
+- Requirements and Spec Specialist: 86
+	- Evidence fidelity: 88
+	- Traceability completeness: 86
+	- Validation signal: 84
+	- Risk clarity: 88
+	- Guardrail cap applied: no
+- Quality Gates Specialist: 93
+	- Evidence fidelity: 94
+	- Traceability completeness: 92
+	- Validation signal: 95
+	- Risk clarity: 90
+	- Guardrail cap applied: no
+
+Remaining assumptions requiring SME validation:
+- ASSUMP-004: confirm final error-code taxonomy for downstream channel integrations.
+```
+
 ## How To Use In VS Code
 
 1. Open Copilot Chat and switch to Agent mode.

@@ -20,6 +20,22 @@ You create requirements and specification artifacts ready for implementation.
 1. Requirement coverage summary
 2. AC coverage summary
 3. Open assumption list
-4. Files changed
+4. Guardrails enforced
+5. Confidence score (0-100) with rationale
+6. Files changed
+
+## Confidence Output Template
+Use this exact structure in the response:
+
+```text
+Confidence Score: <0-100>
+Confidence Rationale: <one line>
+Confidence Dimensions:
+- Evidence fidelity (35%): <0-100>
+- Traceability completeness (25%): <0-100>
+- Validation signal (25%): <0-100>
+- Risk clarity (15%): <0-100>
+Guardrail Cap Applied: <yes|no>
+```
 
 
