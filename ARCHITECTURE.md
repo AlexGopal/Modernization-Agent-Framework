@@ -118,6 +118,19 @@ flowchart TD
   - Displays resolved model names in run controls.
   - Displays generated artifacts in-browser.
 
+### 6. Copilot Custom Agent Layer (VS Code)
+
+- .github/agents/speckit-orchestrator.agent.md
+  - Picker-visible orchestrator: Mainframe modernization agent
+  - Delegates workflow phases to specialist custom agents.
+- .github/agents/*.agent.md
+  - Specialist agents for legacy analysis, business rules, requirements/spec, contracts/mapping, plan/tasks, implementation, secure review, test/review, test automation, quality gates, and dual-model merge.
+
+Important distinction:
+
+- Python pipeline agents (.agentic-sdlc/agents/*.py) generate artifacts in CLI/API runs.
+- Copilot custom agents (.github/agents/*.agent.md) orchestrate chat-driven implementation and review workflows in VS Code.
+
 ## Runtime Flow
 
 Single-model flow:

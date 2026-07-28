@@ -1,83 +1,102 @@
 # Copilot Agents README
 
-This document is the single entry point for Copilot custom agents and workflow in this repository.
+This document is the single entry point for Copilot custom agents and usage in this repository.
 
-## Scope
+## What Changed
 
-Use this guide to:
-- Understand which agents are available and how they are intended to be used.
-- Run implementation, secure review, and test automation in an orchestrator-gated sequence.
-- Run optional dual-model verification and merge for higher confidence.
+This guide now reflects the full current custom-agent set under `.github/agents/`, including:
+- implementation delegation
+- secure review delegation
+- test automation delegation
+- quality-gate delegation
+- dual-model compare and merge delegation
 
-## Source Documents
+## Agent Inventory
 
-Detailed references:
-- `docs/COPILOT_CUSTOM_AGENTS.md`
-- `docs/COPILOT_AGENT_WORKFLOW.md`
+### Picker-visible entry point
 
-## Agent Visibility Model
-
-Picker-visible:
 - Mainframe modernization agent
 
-Delegated/internal (not picker-visible):
+### Delegated specialists (not picker-visible)
+
 - Legacy Analysis Specialist
 - Business Rules Specialist
 - Requirements and Spec Specialist
 - Contract and Mapping Specialist
 - Plan and Tasks Specialist
+- Spec Implementation Specialist
+- Secure Code Review Specialist
 - Test and Review Specialist
+- Test Automation Specialist
 - Quality Gates Specialist
 - Dual Model Merge Specialist
 
-## Authoritative Inputs
+## What Each Agent Is For
 
-Attach these artifacts before implementation or test generation:
-- `.agentic-sdlc/examples/inqacc/output/spec.md`
-- `.agentic-sdlc/examples/inqacc/output/tasks.md`
-- `.agentic-sdlc/examples/inqacc/output/test-spec.md`
-- `.agentic-sdlc/examples/inqacc/output/openapi.yaml`
+- Mainframe modernization agent: orchestrates phased work and delegates specialists in dependency order.
+- Legacy Analysis Specialist: extracts evidence-first legacy behavior and dependencies.
+- Business Rules Specialist: builds BR catalog with evidence and risk context.
+- Requirements and Spec Specialist: produces FR/NFR/AC artifacts with stable IDs.
+- Contract and Mapping Specialist: aligns OpenAPI and mapping/traceability artifacts.
+- Plan and Tasks Specialist: produces implementation plan and scoped task backlog.
+- Spec Implementation Specialist: implements requested task scope from approved artifacts.
+- Secure Code Review Specialist: reports bad practices and vulnerabilities with severity.
+- Test and Review Specialist: builds test spec and review checklists with coverage intent.
+- Test Automation Specialist: creates manual tests plus API and Playwright automation.
+- Quality Gates Specialist: runs tests, review, drift checks, and readiness verdict.
+- Dual Model Merge Specialist: runs compare/merge pass and summarizes reconciliation evidence.
 
-## Recommended Orchestrator-Gated Workflow
+## How To Use In VS Code
 
-1. Run Mainframe modernization agent for a small task slice.
-2. Ask it to pause after implementation summary for manual verification.
-3. Resume only secure review phase and review findings manually.
-4. Resume only test automation phase and review generated assets manually.
-5. Run quality gates and summarize residual risks.
+1. Open Copilot Chat and switch to Agent mode.
+2. Select Mainframe modernization agent from the picker.
+3. Attach authoritative artifacts:
+	- `.agentic-sdlc/examples/inqacc/output/spec.md`
+	- `.agentic-sdlc/examples/inqacc/output/tasks.md`
+	- `.agentic-sdlc/examples/inqacc/output/test-spec.md`
+	- `.agentic-sdlc/examples/inqacc/output/openapi.yaml`
+4. Request only the scope you want (for example TASK-001 to TASK-003).
+5. Ask for gated phases when needed: implementation -> secure review -> test automation -> quality gates.
+6. Optionally request dual-model verification at the end.
 
-## Prompt Templates
+## Recommended Prompt Patterns
 
-Implementation:
-
-```text
-Implement <TASK_SCOPE> only using spec.md, tasks.md, test-spec.md, and openapi.yaml.
-Return implemented task IDs, files changed, tests added/updated, and blockers.
-```
-
-Secure review:
-
-```text
-Review the in-scope implementation for bad practices and vulnerabilities.
-Return findings by severity with impacted files, evidence, and remediations.
-```
-
-Test automation:
+Implementation only:
 
 ```text
-Create manual test cases plus API automation and Playwright UI automation from spec.md, tasks.md, test-spec.md, and openapi.yaml.
-Return BR/FR/AC/TASK coverage mapping and remaining gaps.
+Implement TASK-001 to TASK-003 only using spec.md, tasks.md, test-spec.md, and openapi.yaml.
+Return implemented task IDs, files changed, tests added or updated, and blockers.
 ```
 
-Dual-model double-check (optional):
+Implementation + secure review + test automation + gates:
 
 ```text
-Run dual-model verification using primary model plus Claude, compare outputs, merge final artifacts, and summarize differences from dual-model-analysis.md.
+Implement <TASK_SCOPE> only from spec.md, tasks.md, test-spec.md, and openapi.yaml.
+Then run secure code review and return findings by severity with evidence.
+Then create manual tests plus API and Playwright UI automation tests.
+Then run quality gates and return pass or fail plus residual risks.
 ```
 
-## Operational Notes
+Dual-model verification:
 
-- After pulling new agent definitions, run `Developer: Reload Window` in VS Code if agents do not appear.
-- Keep changes scoped to requested TASK IDs.
-- Preserve legacy behavior unless explicitly marked as modernization enhancement.
-- Do not invent fields or endpoints not present in artifacts.
+```text
+Run dual-model verification using primary model plus Claude,
+compare outputs, merge final artifacts, and summarize differences from dual-model-analysis.md.
+```
+
+## Visibility And Invocation Rules
+
+- Only Mainframe modernization agent is user-invocable in the picker.
+- All specialists are orchestrator-delegated and intentionally hidden from picker selection.
+- If new agent files are pulled and the picker does not update, run Developer: Reload Window.
+
+## Relationship To Framework Agents
+
+Copilot custom agents orchestrate workflow in chat. The Python framework agents produce pipeline artifacts.
+For the Python framework catalog, see AGENTS.md.
+
+## Related Docs
+
+- docs/COPILOT_CUSTOM_AGENTS.md
+- docs/COPILOT_AGENT_WORKFLOW.md
+- AGENTS.md

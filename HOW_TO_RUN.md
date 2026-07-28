@@ -303,3 +303,31 @@ The command writes `detail-drift-report.md` in the generated output folder and e
 	- Set `--ai-max-output-tokens` and `--claude-max-output-tokens` to constrain completion spend.
 	- Use smaller/faster models where acceptable.
 
+## 14. Copilot Custom Agent Quickstart (VS Code)
+
+1. Generate/refresh artifacts first using one of:
+	- `pipeline:generate:default`
+	- `pipeline:dual:compare`
+2. Open Copilot Chat and switch to Agent mode.
+3. Select `Mainframe modernization agent` from the agent picker.
+4. Attach authoritative artifacts:
+	- `.agentic-sdlc/examples/inqacc/output/spec.md`
+	- `.agentic-sdlc/examples/inqacc/output/tasks.md`
+	- `.agentic-sdlc/examples/inqacc/output/test-spec.md`
+	- `.agentic-sdlc/examples/inqacc/output/openapi.yaml`
+5. Request explicit task scope (for example TASK-001 to TASK-003).
+6. Optionally request gated phases: implementation -> secure review -> test automation -> quality gates.
+7. Optionally request dual-model verification and merged summary from `dual-model-analysis.md`.
+
+Notes:
+
+- `Mainframe modernization agent` is the only picker-visible custom agent.
+- Specialist agents are delegated internally by the orchestrator.
+- If agent definitions do not appear after pull, run VS Code command `Developer: Reload Window`.
+
+References:
+
+- `docs/COPILOT_AGENTS_README.md`
+- `docs/COPILOT_CUSTOM_AGENTS.md`
+- `docs/COPILOT_AGENT_WORKFLOW.md`
+

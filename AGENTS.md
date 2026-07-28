@@ -2,7 +2,10 @@
 
 ## Purpose
 
-Defines each framework agent role and when to use it.
+Defines each framework (Python pipeline) agent role and when to use it.
+
+This file documents agents implemented under `.agentic-sdlc/agents/`.
+Copilot custom agents are documented separately in `docs/COPILOT_AGENTS_README.md`.
 
 ## Agents
 
@@ -62,14 +65,13 @@ Defines each framework agent role and when to use it.
 - Use at iteration close or milestone review.
 - Produces modernization-report.md.
 
-15. SpecImplementationAgent
-- Use when implementing scoped tasks directly from authoritative artifacts.
-- Produces code changes and task traceability summary.
+## Copilot Custom Agents
 
-16. SecureCodeReviewAgent
-- Use after implementation to review bad practices and vulnerabilities.
-- Produces security and code-quality findings report.
+Copilot custom agents are workspace chat agents in `.github/agents/` and are not Python pipeline agents.
 
-17. TestAutomationAgent
-- Use after implementation to create manual tests plus API/UI automation from spec artifacts.
-- Produces manual test cases and automation test assets (including Playwright UI tests).
+- Picker-visible entrypoint: Mainframe modernization agent
+- Delegated specialists: Legacy Analysis Specialist, Business Rules Specialist, Requirements and Spec Specialist, Contract and Mapping Specialist, Plan and Tasks Specialist, Spec Implementation Specialist, Secure Code Review Specialist, Test and Review Specialist, Test Automation Specialist, Quality Gates Specialist, Dual Model Merge Specialist
+
+See:
+- docs/COPILOT_AGENTS_README.md
+- docs/COPILOT_CUSTOM_AGENTS.md

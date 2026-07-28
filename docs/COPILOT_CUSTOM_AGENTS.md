@@ -10,11 +10,34 @@ This repo now includes workspace custom agents under `.github/agents/`.
 - `Requirements and Spec Specialist`
 - `Contract and Mapping Specialist`
 - `Plan and Tasks Specialist`
-- `Test and Review Specialist`
-- `Quality Gates Specialist`
 - `Spec Implementation Specialist` (delegated)
 - `Secure Code Review Specialist` (delegated)
 - `Test Automation Specialist` (delegated)
+- `Test and Review Specialist`
+- `Quality Gates Specialist`
+- `Dual Model Merge Specialist`
+
+## Visibility Model
+
+- Picker-visible: `Mainframe modernization agent`
+- Delegated/internal: all specialists listed above
+
+Specialists are configured as `user-invocable: false`, so they are run by orchestration, not direct picker selection.
+
+## Agent Responsibilities (Quick Map)
+
+- `Mainframe modernization agent`: phased orchestration and final summary
+- `Legacy Analysis Specialist`: legacy behavior and dependency evidence
+- `Business Rules Specialist`: BR extraction, IDs, traceable evidence
+- `Requirements and Spec Specialist`: FR/NFR/AC artifacts
+- `Contract and Mapping Specialist`: OpenAPI plus mapping and traceability matrices
+- `Plan and Tasks Specialist`: implementation plan and task decomposition
+- `Spec Implementation Specialist`: scoped code implementation from artifacts
+- `Secure Code Review Specialist`: vulnerability and bad-practice findings
+- `Test and Review Specialist`: test spec plus QA/code-review checklists
+- `Test Automation Specialist`: manual tests + API automation + Playwright UI automation
+- `Quality Gates Specialist`: tests, drift/alignment checks, readiness verdict
+- `Dual Model Merge Specialist`: two-model compare/merge and reconciliation report
 
 ## How to Use in VS Code Copilot
 
@@ -59,6 +82,37 @@ Manual checkpoint flow (single orchestrator call with gated phases):
 3. Continue with secure review phase only after approval.
 4. Continue with test automation phase only after approval.
 5. Run quality gates after final manual sign-off.
+
+## Recommended Usage Patterns
+
+Implementation slice:
+
+```text
+Implement TASK-001 to TASK-003 only.
+Use spec.md, tasks.md, test-spec.md, and openapi.yaml as authority.
+Return task IDs implemented, files changed, tests updated, blockers.
+```
+
+Security checkpoint:
+
+```text
+Run secure review for the in-scope changes and report findings by severity
+with impacted files, evidence, and remediations.
+```
+
+Test automation checkpoint:
+
+```text
+Generate manual test cases plus API automation and Playwright UI automation
+for the in-scope feature slice and return BR/FR/AC/TASK coverage gaps.
+```
+
+Quality gate checkpoint:
+
+```text
+Run quality gates now and return command log, pass/fail by gate,
+top issues, and release-readiness verdict.
+```
 
 ## Quality Gate Commands
 

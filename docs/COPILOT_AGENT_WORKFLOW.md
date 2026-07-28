@@ -79,7 +79,32 @@ If `Agent` mode is not available, update VS Code and GitHub Copilot extensions, 
 
 If `Mainframe modernization agent` is missing after a `git pull`, run `Developer: Reload Window` so VS Code reloads workspace agent definitions.
 
-## 0.1) Day-1 5-Minute Checklist
+## 0.1) Current Custom Agent Map
+
+Picker-visible entry point:
+
+- `Mainframe modernization agent`
+
+Delegated specialists used by the orchestrator:
+
+- `Legacy Analysis Specialist`
+- `Business Rules Specialist`
+- `Requirements and Spec Specialist`
+- `Contract and Mapping Specialist`
+- `Plan and Tasks Specialist`
+- `Spec Implementation Specialist`
+- `Secure Code Review Specialist`
+- `Test and Review Specialist`
+- `Test Automation Specialist`
+- `Quality Gates Specialist`
+- `Dual Model Merge Specialist`
+
+Usage rule:
+
+- Select only `Mainframe modernization agent` in the picker and request the phase scope you want.
+- Specialists are internal delegation units and are not picker-selectable.
+
+## 0.2) Day-1 5-Minute Checklist
 
 Use this exact sequence for a first successful run.
 
