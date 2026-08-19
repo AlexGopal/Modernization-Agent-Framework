@@ -8,8 +8,8 @@ Purpose: Produce structured requirements from business rules and legacy findings
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -57,6 +57,11 @@ Minimum detail expectations:
 - Include explicit security, observability, and environment requirements.
 - Separate preserved legacy behavior from modernization enhancements.
 
+Traceability hard requirements:
+- Every `BR-xxx` ID found in `business-rules.md` must be referenced at least once in this artifact.
+- If a business rule is not represented by an `FR-xxx`, add a dedicated acceptance criterion that references the missing `BR-xxx` ID.
+- Include a final section named `Traceability Addendum` listing each `BR-xxx` and where it is realized.
+
 
 ## Input Previews
 
@@ -72,8 +77,8 @@ Purpose: Define intended target system architecture and constraints before downs
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -94,10 +99,7 @@ Purpose: Define intended target system architecture and constraints before downs
 - output/requirements.md
 - output/spec.md
 - output/tasks.md
-- output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-in
+- output/tes
 
 [...trimmed for token budget...]
 
@@ -321,8 +323,8 @@ Purpose: Extract and normalize business rules from legacy analysis and source ar
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -344,13 +346,7 @@ Purpose: Extract and normalize business rules from legacy analysis and source ar
 - output/spec.md
 - output/tasks.md
 - output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
-
-#
+- output/traceabilit
 
 [...trimmed for token budget...]
 
@@ -376,8 +372,8 @@ Purpose: Produce structured requirements from business rules and legacy findings
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -399,13 +395,7 @@ Purpose: Produce structured requirements from business rules and legacy findings
 - output/spec.md
 - output/tasks.md
 - output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
-
-# Requireme
+- output/traceability-matrix.m
 
 [...trimmed for token budget...]
 
@@ -431,8 +421,8 @@ Purpose: Generate implementation-ready functional and technical specification.
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -458,9 +448,7 @@ Purpose: Generate implementation-ready functional and technical specification.
 
 # Spec Prompt
 
-Create implementation-ready specification from requirements.
-
-Inputs must include `intended-system.md` whe
+Create implementation-
 
 [...trimmed for token budget...]
 
@@ -486,8 +474,8 @@ Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -513,9 +501,7 @@ Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
 
 # OpenAPI Prompt
 
-Generate an OpenAPI contract skeleton based on requirements and specification.
-
-Inputs must i
+Generate
 
 [...trimmed for token budget...]
 
@@ -541,8 +527,8 @@ Purpose: Produce code review checklist and architecture conformance report skele
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -566,9 +552,7 @@ Purpose: Produce code review checklist and architecture conformance report skele
 
 ## Prompt Template
 
-# Code Review Prompt
-
-Create code review checklist aligned with spec-driven implementation.
+# Code R
 
 [...trimmed for token budget...]
 

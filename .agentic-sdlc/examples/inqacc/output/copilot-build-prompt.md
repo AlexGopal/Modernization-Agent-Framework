@@ -8,8 +8,8 @@ Purpose: Generate implementation prompts that can be pasted directly into GitHub
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -66,8 +66,8 @@ Purpose: Define intended target system architecture and constraints before downs
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -88,10 +88,7 @@ Purpose: Define intended target system architecture and constraints before downs
 - output/requirements.md
 - output/spec.md
 - output/tasks.md
-- output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-in
+- output/tes
 
 [...trimmed for token budget...]
 
@@ -179,8 +176,8 @@ Purpose: Extract and normalize business rules from legacy analysis and source ar
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -188,6 +185,257 @@ Purpose: Extract and normalize business rules from legacy analysis and source ar
 - copybooks/ACCDB2.cpy
 - copybooks/ACCOUNT.cpy
 - copybooks/INQACCCZ.cpy
+- system-intent.md
+- output/business-rules.md
+- output/code-review-checklist.md
+- output/copilot-build-prompt.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/modernization-report.md
+- output/plan.md
+- output/program-analysis.md
+- output/qa-review-checklist.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceabilit
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: output/requirements.md
+
+# requirements.md
+
+Status: DRY RUN
+
+Agent: RequirementsAgent
+Purpose: Produce structured requirements from business rules and legacy findings.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+
+## Inputs Considered
+
+- system-intent.md
+- cobol/INQACC.cbl
+- copybooks/ACCDB2.cpy
+- copybooks/ACCOUNT.cpy
+- copybooks/INQACCCZ.cpy
+- output/business-rules.md
+- output/code-review-checklist.md
+- output/copilot-build-prompt.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/modernization-report.md
+- output/plan.md
+- output/program-analysis.md
+- output/qa-review-checklist.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.m
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: output/spec.md
+
+# spec.md
+
+Status: DRY RUN
+
+Agent: SpecAgent
+Purpose: Generate implementation-ready functional and technical specification.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+
+## Inputs Considered
+
+- system-intent.md
+- output/business-rules.md
+- output/code-review-checklist.md
+- output/copilot-build-prompt.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/modernization-report.md
+- output/plan.md
+- output/program-analysis.md
+- output/qa-review-checklist.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.md
+- output/openapi.yaml
+- provided/system-intent.md
+
+## Prompt Template
+
+# Spec Prompt
+
+Create implementation-
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: output/openapi.yaml
+
+# openapi.yaml
+
+Status: DRY RUN
+
+Agent: OpenApiAgent
+Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+
+## Inputs Considered
+
+- system-intent.md
+- output/business-rules.md
+- output/code-review-checklist.md
+- output/copilot-build-prompt.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/modernization-report.md
+- output/plan.md
+- output/program-analysis.md
+- output/qa-review-checklist.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.md
+- output/openapi.yaml
+- provided/system-intent.md
+
+## Prompt Template
+
+# OpenAPI Prompt
+
+Generate
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: output/code-review-checklist.md
+
+# code-review-checklist.md
+
+Status: DRY RUN
+
+Agent: CodeReviewAgent
+Purpose: Produce code review checklist and architecture conformance report skeleton.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+
+## Inputs Considered
+
+- system-intent.md
+- output/business-rules.md
+- output/code-review-checklist.md
+- output/copilot-build-prompt.md
+- output/intended-system.md
+- output/mapping-matrix.md
+- output/modernization-report.md
+- output/plan.md
+- output/program-analysis.md
+- output/qa-review-checklist.md
+- output/requirements.md
+- output/spec.md
+- output/tasks.md
+- output/test-spec.md
+- output/traceability-matrix.md
+- output/openapi.yaml
+- provided/system-intent.md
+
+## Prompt Template
+
+# Code R
+
+[...trimmed for token budget...]
+
+H PIC 99.
+              07 COMM-LAST-STMT-YEAR PIC 9999.
+            05 COMM-NEXT-STMT-DT         PIC 9(8).
+            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
+              07 COMM-NEXT-STMT-DAY PIC 99.
+              07 COMM-NEXT-STMT-MONTH PIC 99.
+              07 COMM-NEXT-STMT-YEAR PIC 9999.
+            05 COMM-AVAIL-BAL            PIC S9(10)V99.
+            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
+
+## Source: output/copilot-build-prompt.md
+
+# copilot-build-prompt.md
+
+Status: DRY RUN
+
+Agent: CopilotPromptAgent
+Purpose: Generate implementation prompts that can be pasted directly into GitHub Copilot.
+
+## Pipeline Context
+
+- Pipeline: mainframe_modernization
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+
+## Inputs Considered
+
 - system-intent.md
 - output/business-rules.md
 - output/code-review-checklist.md
@@ -222,277 +470,6 @@ H PIC 99.
             05 COMM-AVAIL-BAL            PIC S9(10)V99.
             05 COMM-ACTUAL-BAL           PIC S9(10)V99.
 
-## Source: output/requirements.md
-
-# requirements.md
-
-Status: DRY RUN
-
-Agent: RequirementsAgent
-Purpose: Produce structured requirements from business rules and legacy findings.
-
-## Pipeline Context
-
-- Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
-
-## Inputs Considered
-
-- system-intent.md
-- cobol/INQACC.cbl
-- copybooks/ACCDB2.cpy
-- copybooks/ACCOUNT.cpy
-- copybooks/INQACCCZ.cpy
-- output/business-rules.md
-- output/code-review-checklist.md
-- output/copilot-build-prompt.md
-- output/intended-system.md
-- output/mapping-matrix.md
-- output/modernization-report.md
-- output/plan.md
-- output/program-analysis.md
-- output/qa-review-checklist.md
-- output/requirements.md
-- output/spec.md
-- output/tasks.md
-- output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
-
-# Requireme
-
-[...trimmed for token budget...]
-
-H PIC 99.
-              07 COMM-LAST-STMT-YEAR PIC 9999.
-            05 COMM-NEXT-STMT-DT         PIC 9(8).
-            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
-              07 COMM-NEXT-STMT-DAY PIC 99.
-              07 COMM-NEXT-STMT-MONTH PIC 99.
-              07 COMM-NEXT-STMT-YEAR PIC 9999.
-            05 COMM-AVAIL-BAL            PIC S9(10)V99.
-            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
-
-## Source: output/spec.md
-
-# spec.md
-
-Status: DRY RUN
-
-Agent: SpecAgent
-Purpose: Generate implementation-ready functional and technical specification.
-
-## Pipeline Context
-
-- Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
-
-## Inputs Considered
-
-- system-intent.md
-- output/business-rules.md
-- output/code-review-checklist.md
-- output/copilot-build-prompt.md
-- output/intended-system.md
-- output/mapping-matrix.md
-- output/modernization-report.md
-- output/plan.md
-- output/program-analysis.md
-- output/qa-review-checklist.md
-- output/requirements.md
-- output/spec.md
-- output/tasks.md
-- output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
-
-# Spec Prompt
-
-Create implementation-ready specification from requirements.
-
-Inputs must include `intended-system.md` whe
-
-[...trimmed for token budget...]
-
-H PIC 99.
-              07 COMM-LAST-STMT-YEAR PIC 9999.
-            05 COMM-NEXT-STMT-DT         PIC 9(8).
-            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
-              07 COMM-NEXT-STMT-DAY PIC 99.
-              07 COMM-NEXT-STMT-MONTH PIC 99.
-              07 COMM-NEXT-STMT-YEAR PIC 9999.
-            05 COMM-AVAIL-BAL            PIC S9(10)V99.
-            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
-
-## Source: output/openapi.yaml
-
-# openapi.yaml
-
-Status: DRY RUN
-
-Agent: OpenApiAgent
-Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
-
-## Pipeline Context
-
-- Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
-
-## Inputs Considered
-
-- system-intent.md
-- output/business-rules.md
-- output/code-review-checklist.md
-- output/copilot-build-prompt.md
-- output/intended-system.md
-- output/mapping-matrix.md
-- output/modernization-report.md
-- output/plan.md
-- output/program-analysis.md
-- output/qa-review-checklist.md
-- output/requirements.md
-- output/spec.md
-- output/tasks.md
-- output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
-
-# OpenAPI Prompt
-
-Generate an OpenAPI contract skeleton based on requirements and specification.
-
-Inputs must i
-
-[...trimmed for token budget...]
-
-H PIC 99.
-              07 COMM-LAST-STMT-YEAR PIC 9999.
-            05 COMM-NEXT-STMT-DT         PIC 9(8).
-            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
-              07 COMM-NEXT-STMT-DAY PIC 99.
-              07 COMM-NEXT-STMT-MONTH PIC 99.
-              07 COMM-NEXT-STMT-YEAR PIC 9999.
-            05 COMM-AVAIL-BAL            PIC S9(10)V99.
-            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
-
-## Source: output/code-review-checklist.md
-
-# code-review-checklist.md
-
-Status: DRY RUN
-
-Agent: CodeReviewAgent
-Purpose: Produce code review checklist and architecture conformance report skeleton.
-
-## Pipeline Context
-
-- Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
-
-## Inputs Considered
-
-- system-intent.md
-- output/business-rules.md
-- output/code-review-checklist.md
-- output/copilot-build-prompt.md
-- output/intended-system.md
-- output/mapping-matrix.md
-- output/modernization-report.md
-- output/plan.md
-- output/program-analysis.md
-- output/qa-review-checklist.md
-- output/requirements.md
-- output/spec.md
-- output/tasks.md
-- output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
-
-# Code Review Prompt
-
-Create code review checklist aligned with spec-driven implementation.
-
-[...trimmed for token budget...]
-
-H PIC 99.
-              07 COMM-LAST-STMT-YEAR PIC 9999.
-            05 COMM-NEXT-STMT-DT         PIC 9(8).
-            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
-              07 COMM-NEXT-STMT-DAY PIC 99.
-              07 COMM-NEXT-STMT-MONTH PIC 99.
-              07 COMM-NEXT-STMT-YEAR PIC 9999.
-            05 COMM-AVAIL-BAL            PIC S9(10)V99.
-            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
-
-## Source: output/copilot-build-prompt.md
-
-# copilot-build-prompt.md
-
-Status: DRY RUN
-
-Agent: CopilotPromptAgent
-Purpose: Generate implementation prompts that can be pasted directly into GitHub Copilot.
-
-## Pipeline Context
-
-- Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
-
-## Inputs Considered
-
-- system-intent.md
-- output/business-rules.md
-- output/code-review-checklist.md
-- output/copilot-build-prompt.md
-- output/intended-system.md
-- output/mapping-matrix.md
-- output/modernization-report.md
-- output/plan.md
-- output/program-analysis.md
-- output/qa-review-checklist.md
-- output/requirements.md
-- output/spec.md
-- output/tasks.md
-- output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
-
-# Copilot Implementation Prompt
-
-Use generated artifacts to produce implementation co
-
-[...trimmed for token budget...]
-
-H PIC 99.
-              07 COMM-LAST-STMT-YEAR PIC 9999.
-            05 COMM-NEXT-STMT-DT         PIC 9(8).
-            05 COMM-NEXT-STMT-GROUP REDEFINES COMM-NEXT-STMT-DT.
-              07 COMM-NEXT-STMT-DAY PIC 99.
-              07 COMM-NEXT-STMT-MONTH PIC 99.
-              07 COMM-NEXT-STMT-YEAR PIC 9999.
-            05 COMM-AVAIL-BAL            PIC S9(10)V99.
-            05 COMM-ACTUAL-BAL           PIC S9(10)V99.
-
 ## Source: output/mapping-matrix.md
 
 # mapping-matrix.md
@@ -505,8 +482,8 @@ Purpose: Create mapping and traceability matrices from requirements through impl
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -528,11 +505,7 @@ Purpose: Create mapping and traceability matrices from requirements through impl
 - output/spec.md
 - output/tasks.md
 - output/test-spec.md
-- output/traceability-matrix.md
-- output/openapi.yaml
-- provided/system-intent.md
-
-## Prompt Template
+- output/traceabi
 
 [...trimmed for token budget...]
 
@@ -558,8 +531,8 @@ Purpose: Compile a final modernization report that summarizes outputs and next a
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -583,11 +556,7 @@ Purpose: Compile a final modernization report that summarizes outputs and next a
 
 ## Prompt Template
 
-# Final Report Prompt
-
-Compile modernization report with:
-- Inputs reviewed
-- Artifacts genera
+# Final Re
 
 [...trimmed for token budget...]
 
@@ -613,8 +582,8 @@ Purpose: Build phased modernization and delivery plan from the approved specific
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -640,9 +609,7 @@ Purpose: Build phased modernization and delivery plan from the approved specific
 
 # Plan Prompt
 
-Produce delivery plan aligned with spec and requirements.
-
-Inputs must include `intended-system.md
+Produce delive
 
 [...trimmed for token budget...]
 
