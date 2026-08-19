@@ -8,8 +8,8 @@ Purpose: Create mapping and traceability matrices from requirements through impl
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -61,8 +61,8 @@ Purpose: Define intended target system architecture and constraints before downs
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -83,7 +83,10 @@ Purpose: Define intended target system architecture and constraints before downs
 - output/requirements.md
 - output/spec.md
 - output/tasks.md
-- output/tes
+- output/test-spec.md
+- output/traceability-matrix.md
+- output/openapi.yaml
+- provided/system-in
 
 [...trimmed for token budget...]
 
@@ -307,8 +310,8 @@ Purpose: Extract and normalize business rules from legacy analysis and source ar
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -330,7 +333,13 @@ Purpose: Extract and normalize business rules from legacy analysis and source ar
 - output/spec.md
 - output/tasks.md
 - output/test-spec.md
-- output/traceabilit
+- output/traceability-matrix.md
+- output/openapi.yaml
+- provided/system-intent.md
+
+## Prompt Template
+
+#
 
 [...trimmed for token budget...]
 
@@ -356,8 +365,8 @@ Purpose: Produce structured requirements from business rules and legacy findings
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -379,7 +388,13 @@ Purpose: Produce structured requirements from business rules and legacy findings
 - output/spec.md
 - output/tasks.md
 - output/test-spec.md
-- output/traceability-matrix.m
+- output/traceability-matrix.md
+- output/openapi.yaml
+- provided/system-intent.md
+
+## Prompt Template
+
+# Requireme
 
 [...trimmed for token budget...]
 
@@ -405,8 +420,8 @@ Purpose: Generate implementation-ready functional and technical specification.
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -432,7 +447,9 @@ Purpose: Generate implementation-ready functional and technical specification.
 
 # Spec Prompt
 
-Create implementation-
+Create implementation-ready specification from requirements.
+
+Inputs must include `intended-system.md` whe
 
 [...trimmed for token budget...]
 
@@ -458,8 +475,8 @@ Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -485,7 +502,9 @@ Purpose: Generate OpenAPI starter contract from requirements and spec artifacts.
 
 # OpenAPI Prompt
 
-Generate
+Generate an OpenAPI contract skeleton based on requirements and specification.
+
+Inputs must i
 
 [...trimmed for token budget...]
 
@@ -511,8 +530,8 @@ Purpose: Produce code review checklist and architecture conformance report skele
 ## Pipeline Context
 
 - Pipeline: mainframe_modernization
-- Input Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/legacy
-- Output Root: C:/Users/Alex/data/fdm/spec_driven_development_pod/Modernization-Agent-Framework/.agentic-sdlc/examples/inqacc/output_primary
+- Input Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/legacy
+- Output Root: C:/vscode/AgentsMainframeModernization/.agentic-sdlc/examples/inqacc/output_primary
 
 ## Inputs Considered
 
@@ -536,7 +555,9 @@ Purpose: Produce code review checklist and architecture conformance report skele
 
 ## Prompt Template
 
-# Code R
+# Code Review Prompt
+
+Create code review checklist aligned with spec-driven implementation.
 
 [...trimmed for token budget...]
 
